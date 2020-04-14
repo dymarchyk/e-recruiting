@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_USER: root
+      MYSQL_DATABASE: erecruiting
+      MYSQL_HOST: localhost
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3300:3306
+    restart: unless-stopped
+    volumes:
+      - ./tmp:/var/lib/mysq
