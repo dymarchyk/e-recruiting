@@ -14,38 +14,48 @@ window.toast = toast
 @observer
 class App extends Component {
 	
+	state = {
+		loaded: false
+	}
 	
 	componentDidMount() {
 		AuthRepository.getUser()
 					  .then(user => UserState.setUser(user))
 					  .catch(() => null)
+					  .finally(() => this.setState({ loaded: true }))
 	}
 	
 	render() {
-		
 		return (
 			<BrowserRouter>
 				<>
 					<ToastContainer />
+					
 					{
-						UserState.isAuthorized
-							? <Route
-								exact
-								path='/'
-								render={ () => <h1>Ok</h1> }
-							/>
-							: <>
-								<Route
-									exact
-									path={ '/' }
-									component={ RegisterScreen }
-								/>
-								<Route
-									path={ '/login' }
-									component={ LoginScreen }
-								/>
-							</>
+						this.state.loaded &&
+						<>
+							{
+								UserState.isAuthorized
+									? <Route
+										exact
+										path='/'
+										render={ () => <h1>Ok</h1> }
+									/>
+									: <>
+										<Route
+											exact
+											path={ '/' }
+											component={ RegisterScreen }
+										/>
+										<Route
+											path={ '/login' }
+											component={ LoginScreen }
+										/>
+									</>
+							}
+						</>
 					}
+					
 					<Route
 						path={ '/solve/:id' }
 						component={ SolveQuestionnaire }

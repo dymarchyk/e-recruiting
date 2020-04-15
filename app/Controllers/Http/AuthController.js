@@ -12,7 +12,7 @@ class AuthController {
 			response.send(await auth.getUser())
 		}
 		catch (e) {
-			console.log(e)
+			console.log(e.message)
 			response.status(400).json({ message: e.message })
 		}
 	}
@@ -25,7 +25,7 @@ class AuthController {
 			response.send(await auth.getUser())
 		}
 		catch (e) {
-			console.log(e)
+			console.log(e.message)
 			response.status(400).send({
 				message: 'Invalid credentials'
 			})
@@ -46,11 +46,10 @@ class AuthController {
 	async getUserData({ auth, response }) {
 		try {
 			await auth.check()
-			console.log(await auth.getUser(), auth.user)
 			return await auth.getUser()
 		}
 		catch (e) {
-			console.log(e)
+			console.log(e.message)
 			response.status(404).json({ message: 'Not found' })
 		}
 	}

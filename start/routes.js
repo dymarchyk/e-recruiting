@@ -55,7 +55,6 @@ Route.group(() => {
 }).prefix('api/questionnaire')
 
 Route.any('*', ({ response }) => {
-	console.log('any')
 	if (isDev) {
 		response.redirect(`http://${ Env.get('HOST', 'localhost') }:3000`)
 		return

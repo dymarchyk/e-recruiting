@@ -5,7 +5,7 @@
   "description": "Recruiting questionnaire constructor power by React and AdonisJS.",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
+    "start": "adonis serve -p",
     "postinstall": "cd client && yarn install",
     "dev": "nodemon server.js",
     "client": "cd client && node scripts/start.js",
