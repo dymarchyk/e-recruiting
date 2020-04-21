@@ -27,6 +27,8 @@
     "@adonisjs/shield": "^1.0.8",
     "@adonisjs/validator": "^5.0.6",
     "@types/knex": "^0.16.1",
+    "chance": "^1.1.4",
+    "faker": "^4.1.0",
     "lodash": "^4.17.15",
     "mysql": "^2.18.1"
   },

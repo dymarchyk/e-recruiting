@@ -12,15 +12,13 @@ class QuestionSchema extends Schema {
 			
 			table.integer('user_id').unsigned()
 			
-			table.json('correct_answer')
 			table.text('user_answer', 'longtext')
 			
-			table.text('title', 'longtext')
-			table.string('type', 255).notNullable().defaultTo(Question.QUESTION_TYPES.lie_test)
-			table.string('answer_type', 255).notNullable().defaultTo(Question.ANSWER_TYPES.single)
-			
-			
-			table.float('weight').defaultTo(0)
+			table.string('title', 255)
+			table.string('type', 255).notNullable()
+			table.string('answer_type', 255).notNullable().defaultTo(Question.ANSWER_TYPES.boolean)
+			table.integer('group').defaultTo(null)
+			table.bool('lie_test_correct_answer').defaultTo(null)
 			
 			table.foreign('user_id').references('id').on('users').onDelete('cascade')
 			

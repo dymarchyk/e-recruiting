@@ -5,14 +5,20 @@ const Model = use('Model')
 
 class Question extends Model {
 	static QUESTION_TYPES = {
-		'lie_test':   'lie_test',
-		'hard_skill': 'hard_skill'
+		lie_test:   'lie_test',
+		hard_skill: 'hard_skill',
+		will:       'w',
+		physics:    'p',
+		emotion:    'e',
+		logic:      'l'
 	}
 	static ANSWER_TYPES = {
-		text:   'text',
-		multi:  'multi',
-		single: 'single'
+		text:    'text',
+		multi:   'multi',
+		single:  'single',
+		boolean: 'boolean'
 	}
+	
 	
 	static get hidden() {
 		return ['pivot']
@@ -20,22 +26,10 @@ class Question extends Model {
 	
 	static boot() {
 		super.boot()
-		
-		this.addHook('afterFetch', (questions) => {
-			questions.forEach((question) => {
-				question.correct_answer = question.correct_answer ? JSON.parse(question.correct_answer) : []
-			})
-		})
-		this.addHook('afterFind', (question) => {
-			question.correct_answer = question.correct_answer ? JSON.parse(question.correct_answer) : []
-		})
-		this.addHook('afterCreate', (question) => {
-			question.correct_answer = question.correct_answer ? JSON.parse(question.correct_answer) : []
-		})
-		
-		this.addHook('beforeSave', (question) => {
-			question.correct_answer = JSON.stringify(question.correct_answer)
-		})
+	}
+	
+	getLieTestCorrectAnswer(v) {
+		return v === null ? null : Boolean(v)
 	}
 	
 	getCorrectAnswer(correct_answer) {

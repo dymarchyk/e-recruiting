@@ -7,7 +7,6 @@ class Question {
 			'title':       'required|string',
 			'type':        `required|in:${ Object.values(Model.QUESTION_TYPES).join(',') }`,
 			'answer_type': `required|in:${ Object.values(Model.ANSWER_TYPES).join(',') }`,
-			'weight':      'number',
 		}
 	}
 	

@@ -12,7 +12,8 @@ class AnswersSchema extends Schema {
 			table.integer('question_id').unsigned().references('id').inTable('questions').onDelete('cascade')
 			
 			table.text('content', 'longtext').notNullable()
-			table.string('value', 50).notNullable()
+			
+			table.string('value', 50)
 		})
 	}
 	

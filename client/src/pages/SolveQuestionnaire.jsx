@@ -3,17 +3,101 @@ import Checkbox                       from '../components/Checkbox'
 import Input                          from '../components/Input'
 import QuestionnaireRepository        from '../repositories/QuestionnaireRepository'
 
+const isDevMode = process.env.NODE_ENV === 'development'
+
 class SolveQuestionnaire extends Component {
 	state = {
-		questionnaire: null,
-		loaded:        false,
-		answers:       {},
-		email:         '',
-		currentStep:   0,
-		result:        null,
-		sending:       false
+		questionnaire:           null,
+		loaded:                  false,
+		answers:                 {
+			lie_test:  [],
+			character: []
+		},
+		email:                   '',
+		currentStep:             0,
+		result:                  null,
+		sending:                 false,
+		currentQuestionType:     null,
+		currentQuestionIndex:    0,
+		currentQuestionSubIndex: 0,
+		suiteFailed:             false,
+		suitePassed:             false,
+		questionOrder:           ['p', 'w', 'l', 'e'],
+		scores:                  {
+			e: 0,
+			w: 0,
+			l: 0,
+			p: 0
+		},
+		lieScores:               0
 	}
 	repository = new QuestionnaireRepository()
+	
+	checkAndNext = ({ isLastInSubgroup = false }) => {
+		const { currentQuestionType, questionOrder, currentQuestionSubIndex } = this.state
+		const subGroupIndex = questionOrder.indexOf(currentQuestionType)
+		
+		//TODO check if is finish or check intermediate result
+		if (subGroupIndex === questionOrder.length - 1 && isLastInSubgroup) {
+			this.calculateSuite()
+		}
+		this.setState({
+			currentQuestionSubIndex: isLastInSubgroup ? 0 : currentQuestionSubIndex + 1,
+			// currentQuestionIndex:    isLastInSubgroup ? currentQuestionIndex + 1 : currentQuestionIndex,
+			currentQuestionType:     isLastInSubgroup ? questionOrder[subGroupIndex + 1] : currentQuestionType
+		})
+	}
+	
+	calculateSuite = () => {
+		const { currentQuestionIndex, questionOrder, answers } = this.state
+		if (currentQuestionIndex <= 4) {
+			if (currentQuestionIndex === 0) {
+				const lieScores = answers.lie_test.reduce((acc, cur) => {
+					if (cur.answer === cur.lie_test_correct_answer) acc++
+					return acc
+				}, 0)
+				this.setState({
+					lieScores
+				});
+			}
+			
+			
+			const counts = Object
+				.entries(answers.character)
+				.filter(([e]) => new RegExp(`^[ewlp]${ currentQuestionIndex }`, 'i').test(e))
+				.map(([k, v]) => {
+					return [k.replace(/\d/, ''), v.filter(Boolean).length]
+				})
+				.sort((a, b) => b[1] - a[1])
+			
+			switch (currentQuestionIndex) {
+				default:
+				case 0:
+					const max = counts[0]
+					let { scores } = this.state
+					counts.forEach(([k, v]) => {
+						scores[k] = v
+					})
+					if (['p', 'w'].includes(max[0])) {
+						this.setState({
+							scores,
+							suitePassed: true,
+							suiteFailed: false
+						})
+					}
+					else {
+						this.setState({
+							scores,
+							suiteFailed: true,
+							suitePassed: false
+						});
+					}
+				
+			}
+			
+			
+		}
+	}
 	
 	componentDidMount() {
 		const { match: { params: { id } } } = this.props
@@ -51,9 +135,15 @@ class SolveQuestionnaire extends Component {
 	}
 	
 	renderAnswers = (question) => {
-		const { answers } = this.state
+		const {
+			answers, questionnaire, currentQuestionSubIndex,
+			currentQuestionIndex, currentQuestionType, suiteFailed,
+			suitePassed
+		} = this.state
 		const isSingleAnswer = question.answer_type === 'single'
+		const isMultiAnswer = question.answer_type === 'multi'
 		const isText = question.answer_type === 'text'
+		
 		let userAnswers = answers[question.id] ?? []
 		
 		if (isText) {
@@ -68,50 +158,160 @@ class SolveQuestionnaire extends Component {
 				} }
 			/>
 		}
-		return (
-			<ul
-				key={ question.id }
-				className='list'
-			>
-				{
-					question.answers.map(row => {
-						return (
-							<li key={ row.id }>
-								<Checkbox
-									onChange={ () => {
-										if (isSingleAnswer) {
-											userAnswers = [row.id]
-										}
-										else {
-											if (userAnswers.includes(row.id)) {
-												userAnswers = userAnswers.filter(r => +r !== +row.id)
+		else if (isSingleAnswer || isMultiAnswer) {
+			return (
+				<ul
+					key={ question.id }
+					className='list'
+				>
+					{
+						question.answers.map(row => {
+							return (
+								<li key={ row.id }>
+									<Checkbox
+										onChange={ () => {
+											if (isSingleAnswer) {
+												userAnswers = [row.id]
 											}
 											else {
-												userAnswers = userAnswers.concat(row.id)
+												if (userAnswers.includes(row.id)) {
+													userAnswers = userAnswers.filter(r => +r !== +row.id)
+												}
+												else {
+													userAnswers = userAnswers.concat(row.id)
+												}
 											}
+											this.setState({
+												answers: { ...answers, [question.id]: [...userAnswers] }
+											});
+										} }
+										isSelected={ userAnswers?.includes(row.id) }
+										type={ isSingleAnswer ? 'radio' : 'checkbox' }
+										text={ row.content }
+									/>
+								</li>
+							)
+						})
+					}
+				</ul>
+			)
+			
+		}
+		else {
+			const isLastInGroup = currentQuestionIndex === questionnaire.groups[currentQuestionType].length - 1
+			const isLastInSubgroup = currentQuestionSubIndex === questionnaire.groups[currentQuestionType][currentQuestionIndex].length - 1
+			return (
+				<div className='image-answer'>
+					<img
+						onClick={ () => {
+							if (question.type === 'lie_test') {
+								this.setState({
+									answers: {
+										...answers,
+										lie_test: [...answers.lie_test, { ...question, answer: false }]
+									},
+								})
+							}
+							else {
+								this.setState({
+									answers: {
+										...answers,
+										character: {
+											...answers.character,
+											[question.type + question.group]: answers.character[question.type + question.group]?.concat(false) ?? [false]
 										}
-										this.setState({
-											answers: { ...answers, [question.id]: [...userAnswers] }
-										});
-									} }
-									isSelected={ userAnswers?.includes(row.id) }
-									type={ isSingleAnswer ? 'radio' : 'checkbox' }
-									text={ row.content }
-								/>
-							</li>
-						)
-					})
-				}
-			</ul>
-		)
+									},
+								})
+							}
+							this.checkAndNext({
+								isLastInGroup,
+								isLastInSubgroup
+							})
+						} }
+						src={ require('../images/No.png') }
+						alt='No'
+					/>
+					<img
+						onClick={ () => {
+							if (question.type === 'lie_test') {
+								this.setState({
+									answers: {
+										...answers,
+										lie_test: [...answers.lie_test, { ...question, answer: true }]
+									},
+								})
+							}
+							else {
+								this.setState({
+									answers: {
+										...answers,
+										character: {
+											...answers.character,
+											[question.type + question.group]: answers.character[question.type + question.group]?.concat(true) ?? [true]
+										}
+									},
+								})
+							}
+							this.checkAndNext({
+								isLastInGroup,
+								isLastInSubgroup
+							})
+						} }
+						src={ require('../images/Yes.png') }
+						alt='Yes'
+					/>
+				</div>
+			)
+		}
 	}
 	
 	componentDidUpdate(prevProps, prevState, snapshot) {
 		if (prevState.currentStep !== this.state.currentStep) {window.scrollTo(0, 0)}
 	}
 	
+	renderIntermediateResults = () => {
+		const { suiteFailed, scores, lieScores, suitePassed } = this.state
+		
+		return (
+			<div style={ { alignSelf: 'center' } }>
+				<h1 className='h1 text-center'>{ suiteFailed ? 'Спасибо за участие в анкете.' : 'Этап пройден' }</h1>
+				
+				<ul className='list result-table'>
+					<li>Баллы: { Object.values(scores).reduce((a, c) => a + c, 0) }</li>
+					{
+						isDevMode &&
+						Object.entries(scores).map(([k, v]) => <li key={ k }>{ k }: { v }</li>)
+					}
+					<li>Шкала лжи: { lieScores }</li>
+				</ul>
+				
+				{
+					suitePassed &&
+					<button
+						onClick={ () =>
+							this.setState((state, props) => ({
+								currentQuestionSubIndex: 0,
+								currentQuestionIndex:    state.currentQuestionIndex + 1,
+								currentQuestionType:     state.questionOrder[0],
+								suitePassed:             false,
+								suiteFailed:             false
+							}))
+						}
+						className='btn btn-primary mx-auto d-bloc'
+					>Дальше</button>
+				}
+			</div>
+		
+		
+		)
+	}
+	
 	render() {
-		const { email, currentStep, questionnaire, loaded, result } = this.state
+		const {
+			email, currentStep, questionnaire, loaded, result,
+			currentQuestionType, currentQuestionIndex, currentQuestionSubIndex,
+			suiteFailed, suitePassed
+		} = this.state
 		if (!questionnaire && loaded) return <div
 			style={ {
 				minHeight:      '80vh',
@@ -123,6 +323,7 @@ class SolveQuestionnaire extends Component {
 		>
 			<h1 className='h1 text-center'>Данная анкета не найдена.</h1>
 		</div>
+		const currentQuestion = questionnaire?.groups?.[currentQuestionType]?.[currentQuestionIndex]?.[currentQuestionSubIndex] ?? null
 		return (
 			<div className='questionnaire-content'>
 				<div className='questionnaire-content-question'>
@@ -133,99 +334,109 @@ class SolveQuestionnaire extends Component {
 					/>
 					
 					{
-						currentStep > 0 && currentStep < questionnaire?.questions?.length + 1 &&
-						<h1 className='h1'>
-							{ questionnaire.questions[currentStep - 1].title }
-						</h1>
+						currentQuestion === null
+							? <h1 className='h1'>Представьтесь пожалуйста.</h1>
+							: <h1
+								className='h1 animated fadeIn'
+								key={ currentQuestionSubIndex }
+							>
+								{ isDevMode && <>
+									<small>{ currentQuestion?.type }{ currentQuestion?.group }</small>
+									<br /> </> }
+								{ currentQuestion?.title }
+							
+							</h1>
 					}
 				
 				</div>
-				<div className='questionnaire-content-answer'>
-					{
-						currentStep === 0 &&
-						<Input
-							onKeyUp={ e => e.keyCode === 13 && this.setState({ currentStep: currentStep + 1 }) }
-							type='email'
-							required
-							value={ email }
-							onChange={ e => this.setState({ email: e.target.value }) }
-							postScript='Введите текст и нажмите Enter'
-							caption='Email'
-						/>
-					}
-					{
-						currentStep > 0 && currentStep < questionnaire?.questions?.length + 1 &&
-						this.renderAnswers(questionnaire.questions[currentStep - 1])
-					}
-					
-					{/*<div className='image-answer'>*/ }
-					{/*	<img*/ }
-					{/*		src={require('../images/No.png')}*/ }
-					{/*		alt='No'*/ }
-					{/*	/>*/ }
-					{/*	<img*/ }
-					{/*		src={require('../images/Yes.png')}*/ }
-					{/*		alt='Yes'*/ }
-					{/*	/>*/ }
-					{/*</div>*/ }
-					
-					{
-						currentStep > 0 && currentStep < questionnaire?.questions?.length + 1 &&
-						<div className='buttons'>
-							<button
-								onClick={ () => this.setState({ currentStep: currentStep - 1 }) }
-								className='btn btn-outline-primary'
-							>Назад
-							</button>
-							<button
-								onClick={ () => this.setState({ currentStep: currentStep + 1 }) }
-								className='btn btn-primary'
-							>Дальше
-							</button>
+				{
+					suiteFailed || suitePassed
+						? <div className='questionnaire-content-answer'>
+							{
+								this.renderIntermediateResults()
+							}
 						</div>
-					}
-					{
-						currentStep >= questionnaire?.questions?.length + 1 &&
-						<Fragment>
-							<p
-								style={ { margin: '0 auto 50px', fontSize: 26 } }
-								className='text-center'
-							>Спасибо { email } за участие в опросе.</p>
+						: <div className='questionnaire-content-answer'>
+							{
+								currentQuestion === null &&
+								<form
+									action='#!'
+									onSubmit={ e => {
+										e.preventDefault()
+										this.setState({ currentQuestionType: this.state.questionOrder[0] })
+									} }
+								>
+									<Input
+										type='email'
+										required
+										value={ email }
+										onChange={ e => this.setState({ email: e.target.value }) }
+										postScript='Введите текст и нажмите Enter'
+										caption='Email'
+									/>
+								</form>
+							}
+							{
+								currentQuestion !== null &&
+								this.renderAnswers(currentQuestion)
+							}
 							
 							{
-								result &&
-								<Fragment>
-									<p
-										style={ { margin: '0 auto 20px', fontSize: 20 } }
-										className='text-center'
-									>Ваши результаты:</p>
-									<ul className='list result-table'>
-										<li><span>Результат:</span> <span>{ result.score } баллов</span></li>
-										<li><span>Правильные ответы:</span> <span>{ result.counts.correct }</span></li>
-										<li><span>Неправильные ответы:</span> <span>{ result.counts.wrong }</span></li>
-									</ul>
-								</Fragment>
+								['multi', 'single', 'text'].includes(currentQuestion?.answer_type) &&
+								<div className='buttons'>
+									<button
+										onClick={ () => this.checkAndNext({ isLastInSubgroup: currentQuestionSubIndex === questionnaire.groups[currentQuestionType][currentQuestionIndex].length - 1 }) }
+										className='btn btn-primary'
+									>Дальше
+									</button>
+								</div>
 							}
 							{
-								!result &&
-								<button
-									onClick={ this.completeQuestionnaire }
-									style={ { margin: '0 auto' } }
-									className='btn btn-primary'
-								>
+								currentStep >= questionnaire?.questions?.length + 1 &&
+								<Fragment>
+									<p
+										style={ { margin: '0 auto 50px', fontSize: 26 } }
+										className='text-center'
+									>Спасибо { email } за участие в опросе.</p>
+									
 									{
-										this.state.sending
-											? 'Обработка...'
-											: 'Отправить ответы'
+										result &&
+										<Fragment>
+											<p
+												style={ { margin: '0 auto 20px', fontSize: 20 } }
+												className='text-center'
+											>Ваши результаты:</p>
+											<ul className='list result-table'>
+												<li><span>Результат:</span> <span>{ result.score } баллов</span></li>
+												<li><span>Правильные ответы:</span> <span>{ result.counts.correct }</span>
+												</li>
+												<li><span>Неправильные ответы:</span> <span>{ result.counts.wrong }</span>
+												</li>
+											</ul>
+										</Fragment>
 									}
-								</button>
+									{
+										!result &&
+										<button
+											onClick={ this.completeQuestionnaire }
+											style={ { margin: '0 auto' } }
+											className='btn btn-primary'
+										>
+											{
+												this.state.sending
+													? 'Обработка...'
+													: 'Отправить ответы'
+											}
+										</button>
+										
+									}
+								
+								</Fragment>
 								
 							}
-						
-						</Fragment>
-						
-					}
-				</div>
+						</div>
+				}
+			
 			</div>
 		);
 	}

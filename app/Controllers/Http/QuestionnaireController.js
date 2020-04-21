@@ -2,6 +2,8 @@
 const Questionnaire = use('App/Models/Questionnaire')
 const Applicant = use('App/Models/Applicant')
 const Question = use('App/Models/Question')
+const { groupBy, chunk } = require('lodash')
+const faker = require('faker')
 
 class QuestionnaireController {
 	
@@ -66,9 +68,27 @@ class QuestionnaireController {
 	
 	async show({ params, response }) {
 		try {
-			return await Questionnaire.query().where('id', +params.id).with('questions').with('questions.answers').first()
+			const res = await Questionnaire.query().where('id', +params.id).with('questions').with('questions.answers').first()
+			const groups = groupBy(res.toJSON().questions, v => v.type)
+			let ind = 0
+			Object.keys(groups).forEach((group) => {
+				if (group !== Question.QUESTION_TYPES.lie_test) {
+					const lies = groups[Question.QUESTION_TYPES.lie_test]
+					groups[group] = groupBy(groups[group], e => e.group)
+					groups[group][0] = groups[group][0].concat(lies.slice(ind, ind + 2))
+					groups[group] = Object.fromEntries(Object.entries(groups[group]).map(([k, v]) => [k, faker.helpers.shuffle(v)]))
+					ind += 2
+				}
+			})
+			
+			delete groups[Question.QUESTION_TYPES.lie_test]
+			return {
+				...res.toJSON(),
+				groups
+			}
 		}
 		catch (e) {
+			console.log(e)
 			response.status(404).json({ message: 'Not found' })
 		}
 	}

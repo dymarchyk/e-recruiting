@@ -3,15 +3,15 @@ const Question = use('App/Models/Question')
 const Applicant = use('App/Models/Applicant')
 const Questionnaire = use('App/Models/Questionnaire')
 const User = use('App/Models/User')
-
+const { groupBy } = require('lodash')
 class QuestionController {
 	
 	async index({ auth }) {
-		return await Question.query().where('user_id', +auth.user.id).with('answers').fetch()
+		return await Question.query().with('answers').fetch()
 	}
 	
 	async create({ request, auth, response }) {
-		const data = request.only(['title', 'type', 'answer_type', 'weight'])
+		const data = request.only(['title', 'type', 'answer_type'])
 		
 		try {
 			const question = await Question.create(data)

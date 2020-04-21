@@ -34,7 +34,7 @@ Route.group(() => {
 }).prefix('api/user')
 
 Route.group(() => {
-	Route.get('/index', 'QuestionController.index').middleware(['auth'])
+	Route.get('/index', 'QuestionController.index')
 	Route.post('/create', 'QuestionController.create').middleware(['auth']).validator('Question')
 	Route.patch('/edit/:id', 'QuestionController.edit').middleware(['auth'])
 	Route.delete('/delete/:id', 'QuestionController.delete').middleware(['auth'])

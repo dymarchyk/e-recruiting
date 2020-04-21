@@ -1,3 +1,4 @@
+import 'animate.css/animate.min.css'
 import { observer }              from 'mobx-react'
 import React, { Component }      from 'react';
 import { BrowserRouter, Route }  from 'react-router-dom'

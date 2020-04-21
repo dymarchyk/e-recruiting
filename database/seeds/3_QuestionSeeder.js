@@ -14,37 +14,77 @@
 const Factory = use('Factory')
 const User = use('App/Models/User')
 const Question = use('App/Models/Question')
+/**
+ * @type {Array}
+ */
+const P = require('../data/Physic_qestions.json')
+const E = require('../data/Emotion_questions.json')
+const L = require('../data/Lohic_questions.json')
+const W = require('../data/Will_questions.json')
+
+const Lie = require('../data/Lie_questions')
 
 class QuestionSeeder {
 	async run() {
 		try {
 			let user = await User.first()
+			const data = [P, E, L, W]
 			
-			for (let i = 0; i < 5; i++) {
-				const question = await Factory.model('App/Models/Question').make()
-				const answers = await Factory.model('App/Models/Answer').makeMany(3)
-				
-				let step = 0
-				for (let answer of answers) {
-					await question.answers().save(answer)
-					if (question.answer_type === Question.ANSWER_TYPES.single && step === 3) {
-						question.correct_answer = question.correct_answer.concat(answer)
+			await Promise.all(
+				data.map((row, pos) => {
+					let currentType
+					switch (pos) {
+						case 0:
+							currentType = Question.QUESTION_TYPES.physics
+							break;
+						case 1:
+							currentType = Question.QUESTION_TYPES.emotion
+							break;
+						case 2:
+							currentType = Question.QUESTION_TYPES.logic
+							break;
+						case 3:
+							currentType = Question.QUESTION_TYPES.will
+							break;
+						
 					}
-					else if (question.answer_type === Question.ANSWER_TYPES.multi && [1, 2, 5].includes(step)) {
-						question.correct_answer = question.correct_answer.concat(answer)
+					return row.map((col, index) => {
+						return col.map(async (cel) => {
+							try {
+								const question = await Question.create({
+									title:       cel,
+									type:        currentType,
+									answer_type: Question.ANSWER_TYPES.boolean,
+									group:       index,
+								})
+							}
+							catch (e) {
+								console.log(e)
+							}
+							
+						})
+					})
+				}).flat(3),
+				Array.from(Lie).map(async (row) => {
+					try {
+						const question = await Question.create({
+							title:                   row.question,
+							type:                    Question.QUESTION_TYPES.lie_test,
+							answer_type:             Question.ANSWER_TYPES.boolean,
+							lie_test_correct_answer: row.should_answer,
+							group:                   null,
+						})
 					}
-					else if (question.answer_type === Question.ANSWER_TYPES.text) {
-						question.user_answer = answer.content
+					catch (e) {
+						console.log(e.message)
 					}
-					step++
-				}
-				
-				await user.questions().save(question)
-				await question.save()
-			}
+				})
+			)
+			
+			
 		}
 		catch (e) {
-			console.info(e)
+			// console.info(e)
 		}
 	}
 }
