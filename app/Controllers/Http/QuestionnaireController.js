@@ -69,22 +69,41 @@ class QuestionnaireController {
 	async show({ params, response }) {
 		try {
 			const res = await Questionnaire.query().where('id', +params.id).with('questions').with('questions.answers').first()
+			let lies = await Question.query().where('type', Question.QUESTION_TYPES.lie_test).fetch()
+			const types = ['p', 'w', 'l', 'e']
+			const questions = [[], [], [], []]
 			const groups = groupBy(res.toJSON().questions, v => v.type)
-			let ind = 0
+			// split all questions by types (p,w,l,e) and order each type by group (0...4)
+			lies = lies.toJSON()
 			Object.keys(groups).forEach((group) => {
 				if (group !== Question.QUESTION_TYPES.lie_test) {
-					const lies = groups[Question.QUESTION_TYPES.lie_test]
 					groups[group] = groupBy(groups[group], e => e.group)
-					groups[group][0] = groups[group][0].concat(lies.slice(ind, ind + 2))
-					groups[group] = Object.fromEntries(Object.entries(groups[group]).map(([k, v]) => [k, faker.helpers.shuffle(v)]))
-					ind += 2
 				}
 			})
+			//example for p w l e
+			//put p0 w0 l0 e0
+			types.forEach(type => {
+				lies = faker.helpers.shuffle(lies)
+				questions[0].push(
+					faker.helpers.shuffle(
+						[...groups[type][0], lies.pop(), lies.pop()]
+					)
+				)
+			})
+			//put p1 p2 w1 w2
+			types.slice(0, 2).forEach(type => {
+				questions[1].push(faker.helpers.shuffle(groups[type][1]))
+				questions[1].push(faker.helpers.shuffle(groups[type][2]))
+			})
+			//put l3 l4 e3 e4
+			types.slice(2, 4).forEach(type => {
+				questions[2].push(faker.helpers.shuffle(groups[type][3]))
+				questions[2].push(faker.helpers.shuffle(groups[type][4]))
+			})
 			
-			delete groups[Question.QUESTION_TYPES.lie_test]
 			return {
 				...res.toJSON(),
-				groups
+				questions
 			}
 		}
 		catch (e) {

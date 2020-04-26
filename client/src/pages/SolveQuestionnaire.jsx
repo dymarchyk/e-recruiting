@@ -13,11 +13,11 @@ class SolveQuestionnaire extends Component {
 			lie_test:  [],
 			character: []
 		},
-		email:                   '',
+		email:                   isDevMode ? 'mail@mail.com' : '',
 		currentStep:             0,
 		result:                  null,
 		sending:                 false,
-		currentQuestionType:     null,
+		currentGroupIndex:       isDevMode ? 1 : null,
 		currentQuestionIndex:    0,
 		currentQuestionSubIndex: 0,
 		suiteFailed:             false,
@@ -33,52 +33,58 @@ class SolveQuestionnaire extends Component {
 	}
 	repository = new QuestionnaireRepository()
 	
-	checkAndNext = ({ isLastInSubgroup = false }) => {
-		const { currentQuestionType, questionOrder, currentQuestionSubIndex } = this.state
-		const subGroupIndex = questionOrder.indexOf(currentQuestionType)
-		
+	checkAndNext = () => {
+		const { currentGroupIndex, currentQuestionSubIndex, currentQuestionIndex, questionnaire: { questions } } = this.state
+		const isLastInSubgroup = currentQuestionSubIndex === questions[currentGroupIndex][currentQuestionIndex].length - 1
+		const isLastQuestion = currentQuestionIndex === questions[currentGroupIndex].length - 1
+		const isLastInGroup = currentGroupIndex === questions.length - 1
 		//TODO check if is finish or check intermediate result
-		if (subGroupIndex === questionOrder.length - 1 && isLastInSubgroup) {
-			this.calculateSuite()
+		
+		if (isLastQuestion && isLastInSubgroup) {
+			setTimeout(this.calculateSuite, 100)
 		}
+		
 		this.setState({
 			currentQuestionSubIndex: isLastInSubgroup ? 0 : currentQuestionSubIndex + 1,
-			// currentQuestionIndex:    isLastInSubgroup ? currentQuestionIndex + 1 : currentQuestionIndex,
-			currentQuestionType:     isLastInSubgroup ? questionOrder[subGroupIndex + 1] : currentQuestionType
+			currentQuestionIndex:    isLastInSubgroup && !isLastQuestion ? currentQuestionIndex + 1 : currentQuestionIndex
 		})
 	}
 	
 	calculateSuite = () => {
-		const { currentQuestionIndex, questionOrder, answers } = this.state
-		if (currentQuestionIndex <= 4) {
-			if (currentQuestionIndex === 0) {
+		const { currentQuestionIndex, currentGroupIndex, questionOrder, answers } = this.state
+		if (currentGroupIndex <= 4) {
+			if (currentGroupIndex === 0) {
 				const lieScores = answers.lie_test.reduce((acc, cur) => {
-					if (cur.answer === cur.lie_test_correct_answer) acc++
+					if (cur.answer === cur.lie_test_correct_answer) acc += 1
 					return acc
 				}, 0)
 				this.setState({
 					lieScores
-				});
+				})
 			}
 			
 			
 			const counts = Object
+				//grab all character scores per round
 				.entries(answers.character)
-				.filter(([e]) => new RegExp(`^[ewlp]${ currentQuestionIndex }`, 'i').test(e))
+				//calculate counts of correct answers in each group
 				.map(([k, v]) => {
-					return [k.replace(/\d/, ''), v.filter(Boolean).length]
+					return [k, v.filter(Boolean).length]
 				})
+				//sort result by maximum correct answers
 				.sort((a, b) => b[1] - a[1])
+			let { scores } = this.state
 			
-			switch (currentQuestionIndex) {
+			counts.forEach(([k, v]) => {
+				scores[k.replace(/\d/, '')] += v
+			})
+			const [first, second, third, fourth] = questionOrder
+			const map = Object.fromEntries(counts)
+			switch (currentGroupIndex) {
 				default:
 				case 0:
 					const max = counts[0]
-					let { scores } = this.state
-					counts.forEach(([k, v]) => {
-						scores[k] = v
-					})
-					if (['p', 'w'].includes(max[0])) {
+					if ([first, second].includes(max[0].replace(/\d/, ''))) {
 						this.setState({
 							scores,
 							suitePassed: true,
@@ -92,7 +98,39 @@ class SolveQuestionnaire extends Component {
 							suitePassed: false
 						});
 					}
-				
+					break;
+				case 1:
+					if (map[first + 1] > map[first + 2] && map[second + 2] > map[second + 1]) {
+						this.setState({
+							scores,
+							suitePassed: true,
+							suiteFailed: false
+						})
+					}
+					else {
+						this.setState({
+							scores,
+							suiteFailed: true,
+							suitePassed: false
+						});
+					}
+					break;
+				case 2:
+					if (map[third + 3] > map[third + 4] && map[fourth + 4] > map[fourth + 3]) {
+						this.setState({
+							scores,
+							suitePassed: true,
+							suiteFailed: false
+						})
+					}
+					else {
+						this.setState({
+							scores,
+							suiteFailed: true,
+							suitePassed: false
+						});
+					}
+					break;
 			}
 			
 			
@@ -137,8 +175,7 @@ class SolveQuestionnaire extends Component {
 	renderAnswers = (question) => {
 		const {
 			answers, questionnaire, currentQuestionSubIndex,
-			currentQuestionIndex, currentQuestionType, suiteFailed,
-			suitePassed
+			currentQuestionIndex, currentGroupIndex,
 		} = this.state
 		const isSingleAnswer = question.answer_type === 'single'
 		const isMultiAnswer = question.answer_type === 'multi'
@@ -198,8 +235,8 @@ class SolveQuestionnaire extends Component {
 			
 		}
 		else {
-			const isLastInGroup = currentQuestionIndex === questionnaire.groups[currentQuestionType].length - 1
-			const isLastInSubgroup = currentQuestionSubIndex === questionnaire.groups[currentQuestionType][currentQuestionIndex].length - 1
+			const isLastInGroup = currentQuestionIndex === questionnaire.questions[currentGroupIndex].length - 1
+			const isLastInSubgroup = currentQuestionSubIndex === questionnaire.questions[currentGroupIndex][currentQuestionIndex].length - 1
 			return (
 				<div className='image-answer'>
 					<img
@@ -280,25 +317,33 @@ class SolveQuestionnaire extends Component {
 					<li>Баллы: { Object.values(scores).reduce((a, c) => a + c, 0) }</li>
 					{
 						isDevMode &&
-						Object.entries(scores).map(([k, v]) => <li key={ k }>{ k }: { v }</li>)
+						Object.entries(scores).filter(e => e[0] > 0).map(([k, v]) => <li key={ k }>{ k }: { v }</li>)
 					}
-					<li>Шкала лжи: { lieScores }</li>
+					{ lieScores > 0 && <li>Шкала лжи: { lieScores }</li> }
 				</ul>
 				
 				{
 					suitePassed &&
 					<button
 						onClick={ () =>
-							this.setState((state, props) => ({
+							this.setState((state) => ({
 								currentQuestionSubIndex: 0,
-								currentQuestionIndex:    state.currentQuestionIndex + 1,
-								currentQuestionType:     state.questionOrder[0],
+								currentQuestionIndex:    0,
+								currentGroupIndex:       state.currentGroupIndex + 1,
 								suitePassed:             false,
-								suiteFailed:             false
+								suiteFailed:             false,
+								scores:                  {
+									e: 0,
+									w: 0,
+									l: 0,
+									p: 0
+								},
 							}))
 						}
 						className='btn btn-primary mx-auto d-bloc'
-					>Дальше</button>
+					>
+						Дальше
+					</button>
 				}
 			</div>
 		
@@ -309,7 +354,7 @@ class SolveQuestionnaire extends Component {
 	render() {
 		const {
 			email, currentStep, questionnaire, loaded, result,
-			currentQuestionType, currentQuestionIndex, currentQuestionSubIndex,
+			currentGroupIndex, currentQuestionIndex, currentQuestionSubIndex,
 			suiteFailed, suitePassed
 		} = this.state
 		if (!questionnaire && loaded) return <div
@@ -323,7 +368,8 @@ class SolveQuestionnaire extends Component {
 		>
 			<h1 className='h1 text-center'>Данная анкета не найдена.</h1>
 		</div>
-		const currentQuestion = questionnaire?.groups?.[currentQuestionType]?.[currentQuestionIndex]?.[currentQuestionSubIndex] ?? null
+		const currentQuestion = questionnaire?.questions?.[currentGroupIndex]?.[currentQuestionIndex]?.[currentQuestionSubIndex] ?? null
+		
 		return (
 			<div className='questionnaire-content'>
 				<div className='questionnaire-content-question'>
@@ -332,21 +378,26 @@ class SolveQuestionnaire extends Component {
 						src={ require('../images/logo-inverted.png') }
 						alt=''
 					/>
-					
 					{
-						currentQuestion === null
-							? <h1 className='h1'>Представьтесь пожалуйста.</h1>
-							: <h1
-								className='h1 animated fadeIn'
-								key={ currentQuestionSubIndex }
-							>
-								{ isDevMode && <>
-									<small>{ currentQuestion?.type }{ currentQuestion?.group }</small>
-									<br /> </> }
-								{ currentQuestion?.title }
-							
-							</h1>
+						!(suiteFailed || suitePassed) &&
+						<>
+							{
+								currentQuestion === null
+									? <h1 className='h1'>Представьтесь пожалуйста.</h1>
+									: <h1
+										className='h1 animated fadeIn'
+										key={ currentQuestionSubIndex }
+									>
+										{ isDevMode && <>
+											<small>{ currentQuestion?.type }{ currentQuestion?.group }</small>
+											<br /> </> }
+										{ currentQuestion?.title }
+									
+									</h1>
+							}
+						</>
 					}
+				
 				
 				</div>
 				{
@@ -363,7 +414,7 @@ class SolveQuestionnaire extends Component {
 									action='#!'
 									onSubmit={ e => {
 										e.preventDefault()
-										this.setState({ currentQuestionType: this.state.questionOrder[0] })
+										this.setState({ currentGroupIndex: 0 })
 									} }
 								>
 									<Input
@@ -385,7 +436,7 @@ class SolveQuestionnaire extends Component {
 								['multi', 'single', 'text'].includes(currentQuestion?.answer_type) &&
 								<div className='buttons'>
 									<button
-										onClick={ () => this.checkAndNext({ isLastInSubgroup: currentQuestionSubIndex === questionnaire.groups[currentQuestionType][currentQuestionIndex].length - 1 }) }
+										onClick={ () => this.checkAndNext() }
 										className='btn btn-primary'
 									>Дальше
 									</button>
