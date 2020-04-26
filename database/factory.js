@@ -27,16 +27,15 @@ Factory.blueprint('App/Models/User', (faker) => {
 
 Factory.blueprint('App/Models/Question', faker => {
 	return {
-		title:       faker.paragraph(),
-		type:        faker.shuffle(Object.values(Question.QUESTION_TYPES))[0],
-		answer_type: faker.shuffle(Object.values(Question.ANSWER_TYPES))[0],
-		
+		title:       faker.word(3),
+		type:        Question.QUESTION_TYPES.hard_skill,
+		answer_type: faker.shuffle([Question.ANSWER_TYPES.multi, Question.ANSWER_TYPES.single, Question.ANSWER_TYPES.text])[0],
 	}
 })
 
 Factory.blueprint('App/Models/Answer', faker => {
 	return {
-		content: faker.paragraph(),
+		content: faker.word(),
 		value:   faker.guid()
 	}
 })

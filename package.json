@@ -1,6 +1,6 @@
 {
   "name": "e-recruiting",
-  "version": "4.1.0",
+  "version": "1.0.1",
   "adonis-version": "4.1.0",
   "description": "Recruiting questionnaire constructor power by React and AdonisJS.",
   "main": "server.js",

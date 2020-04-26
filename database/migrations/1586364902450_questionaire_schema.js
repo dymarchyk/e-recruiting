@@ -10,7 +10,7 @@ class QuestionnaireSchema extends Schema {
 			table.timestamps()
 			
 			table.integer('respond_count').defaultTo(0)
-			table.float('score').defaultTo(0)
+			table.string('order', 4).notNullable().defaultTo('pwle')
 			
 			table.integer('user_id').unsigned()
 			

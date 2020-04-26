@@ -34,7 +34,7 @@ Route.group(() => {
 }).prefix('api/user')
 
 Route.group(() => {
-	Route.get('/index', 'QuestionController.index')
+	Route.get('/index', 'QuestionController.index').middleware(['auth'])
 	Route.post('/create', 'QuestionController.create').middleware(['auth']).validator('Question')
 	Route.patch('/edit/:id', 'QuestionController.edit').middleware(['auth'])
 	Route.delete('/delete/:id', 'QuestionController.delete').middleware(['auth'])
@@ -54,7 +54,7 @@ Route.group(() => {
 	Route.delete('/delete/:id', 'QuestionnaireController.delete').middleware(['auth'])
 }).prefix('api/questionnaire')
 
-Route.any('*', ({ response }) => {
+Route.any('*', ({ response, request }) => {
 	if (isDev) {
 		response.redirect(`http://${ Env.get('HOST', 'localhost') }:3000`)
 		return

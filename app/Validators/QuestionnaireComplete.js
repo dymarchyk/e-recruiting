@@ -1,12 +1,15 @@
 'use strict'
-
+const Question = use('App/Models/Question')
 class QuestionnaireComplete {
 	get rules() {
 		return {
-			email:                   'required|email',
-			answers:                 'required|array',
-			'answers.*.answers':     'required|array',
-			'answers.*.question_id': 'required|exists:questions,id'
+			email:                                                      'required|email',
+			answers:                                                    'required',
+			'answers.other':                                            'required',
+			'answers.other.*':                                          'array',
+			[`answers.${ Question.QUESTION_TYPES.lie_test }`]:          'required',
+			[`answers.${ Question.QUESTION_TYPES.lie_test }.*.id`]:     'required|exists:questions,id',
+			[`answers.${ Question.QUESTION_TYPES.lie_test }.*.answer`]: 'required',
 		}
 	}
 	

@@ -157,6 +157,13 @@ body {
     transition: .3s;
 }
 
+.btn:disabled {
+    opacity: .7;
+    user-select: none;
+    cursor: not-allowed;
+}
+
+
 .btn:focus {
     outline: none
 }
@@ -319,7 +326,12 @@ body {
     align-items: center;
 }
 
+.image-answer {
+    user-select: none;
+}
+
 .image-answer img {
+    user-select: none;
     margin: 0 30px;
     cursor: pointer;
     transition: .2s;

@@ -2,7 +2,7 @@
 const Questionnaire = use('App/Models/Questionnaire')
 const Applicant = use('App/Models/Applicant')
 const Question = use('App/Models/Question')
-const { groupBy, chunk } = require('lodash')
+const { groupBy, chunk, omit, pickBy } = require('lodash')
 const faker = require('faker')
 
 class QuestionnaireController {
@@ -69,12 +69,24 @@ class QuestionnaireController {
 	async show({ params, response }) {
 		try {
 			const res = await Questionnaire.query().where('id', +params.id).with('questions').with('questions.answers').first()
-			let lies = await Question.query().where('type', Question.QUESTION_TYPES.lie_test).fetch()
-			const types = ['p', 'w', 'l', 'e']
-			const questions = [[], [], [], []]
-			const groups = groupBy(res.toJSON().questions, v => v.type)
+			let allQuestions = await Question.query().whereIn('type', [
+				Question.QUESTION_TYPES.lie_test,
+				Question.QUESTION_TYPES.logic,
+				Question.QUESTION_TYPES.physics,
+				Question.QUESTION_TYPES.will,
+				Question.QUESTION_TYPES.emotion,
+			]).fetch()
+			let lies = allQuestions.toJSON().filter(e => e.type === Question.QUESTION_TYPES.lie_test)
+			const types = res.order.split('')
+			const questions = [
+				[],
+				[],
+				[],
+				[res.toJSON().questions]
+			]
+			const groups = omit(groupBy(allQuestions.toJSON(), v => v.type), [Question.QUESTION_TYPES.lie_test])
+			
 			// split all questions by types (p,w,l,e) and order each type by group (0...4)
-			lies = lies.toJSON()
 			Object.keys(groups).forEach((group) => {
 				if (group !== Question.QUESTION_TYPES.lie_test) {
 					groups[group] = groupBy(groups[group], e => e.group)
@@ -125,67 +137,55 @@ class QuestionnaireController {
 			}
 			questionnaire.respond_count++
 			let score = 0
-			let counts = { correct: 0, wrong: 0 }
 			const applicant = await Applicant.create({ email: data.email, answers: JSON.stringify(data.answers) })
 			await questionnaire.applicants().save(applicant)
-			const c = await questionnaire.questions().fetch().then(c => c.toJSON())
 			
+			Object.entries(data.answers.other).forEach(([k, v]) => {
+				score += v.filter(Boolean).length
+			})
 			
-			if (data.answers.length !== c.length) {
-				applicant.save()
-				questionnaire.save()
-				response.status(400).json({ message: 'failed' })
-				return
-			}
-			
-			for (let answer of data.answers) {
-				let currentQuestion = await questionnaire.questions().where('id', +answer.question_id).first()
-				
-				if (currentQuestion.answer_type === Question.ANSWER_TYPES.text) {
-					if (answer.answers.length >= 1 && currentQuestion.user_answer === answer.answers[0]) {
-						score += currentQuestion.weight
-						counts.correct++
-						console.log('correct text answer')
-					}
-					else {
-						counts.wrong++
-					}
-				}
-				else if (currentQuestion.answer_type === Question.ANSWER_TYPES.single) {
-					if (answer.answers.length >= 1 && +answer.answers[0] === currentQuestion.correct_answer[0]) {
-						score += currentQuestion.weight
-						counts.correct++
-						console.log('correct single answer')
-					}
-					else {
-						counts.wrong++
-					}
-					
-				}
-				else if (currentQuestion.answer_type === Question.ANSWER_TYPES.multi) {
-					const res = answer.answers.length === currentQuestion.correct_answer.length &&
-								currentQuestion.correct_answer.every(row => answer.answers.map(r => +r).includes(row.id))
-					if (res) {
-						score += currentQuestion.weight
-						counts.correct++
-						console.log('correct multi answer')
-					}
-					else {
-						counts.wrong++
-					}
-					
-				}
-			}
+			/*for (let answer of data.answers.other) {
+			 let currentQuestion = await questionnaire.questions().where('id', +answer.question_id).first()
+			 
+			 if (currentQuestion.answer_type === Question.ANSWER_TYPES.text) {
+			 if (answer.answers.length >= 1 && currentQuestion.user_answer === answer.answers[0]) {
+			 score += currentQuestion.weight
+			 counts.correct++
+			 console.log('correct text answer')
+			 }
+			 else {
+			 counts.wrong++
+			 }
+			 }
+			 else if (currentQuestion.answer_type === Question.ANSWER_TYPES.single) {
+			 if (answer.answers.length >= 1 && +answer.answers[0] === currentQuestion.correct_answer[0]) {
+			 score += currentQuestion.weight
+			 counts.correct++
+			 console.log('correct single answer')
+			 }
+			 else {
+			 counts.wrong++
+			 }
+			 
+			 }
+			 else if (currentQuestion.answer_type === Question.ANSWER_TYPES.multi) {
+			 const res = answer.answers.length === currentQuestion.correct_answer.length &&
+			 currentQuestion.correct_answer.every(row => answer.answers.map(r => +r).includes(row.id))
+			 if (res) {
+			 score += currentQuestion.weight
+			 counts.correct++
+			 console.log('correct multi answer')
+			 }
+			 else {
+			 counts.wrong++
+			 }
+			 
+			 }
+			 }*/
 			
 			applicant.score = score
 			await applicant.save()
 			await questionnaire.save()
-			return {
-				questionnaire: await Questionnaire.query().where('id', questionnaire.id).with('questions').first(),
-				applicant,
-				score,
-				counts
-			}
 		}
 		catch (e) {
 			console.log(e)

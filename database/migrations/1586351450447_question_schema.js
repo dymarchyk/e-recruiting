@@ -17,6 +17,7 @@ class QuestionSchema extends Schema {
 			table.string('title', 255)
 			table.string('type', 255).notNullable()
 			table.string('answer_type', 255).notNullable().defaultTo(Question.ANSWER_TYPES.boolean)
+			
 			table.integer('group').defaultTo(null)
 			table.bool('lie_test_correct_answer').defaultTo(null)
 			

@@ -29,7 +29,7 @@ class QuestionSeeder {
 		try {
 			let user = await User.first()
 			const data = [P, E, L, W]
-			
+			const questions = await Factory.model('App/Models/Question').createMany(4)
 			await Promise.all(
 				data.map((row, pos) => {
 					let currentType
@@ -46,7 +46,7 @@ class QuestionSeeder {
 						case 3:
 							currentType = Question.QUESTION_TYPES.will
 							break;
-						
+
 					}
 					return row.map((col, index) => {
 						return col.map(async (cel) => {
@@ -61,7 +61,7 @@ class QuestionSeeder {
 							catch (e) {
 								console.log(e)
 							}
-							
+
 						})
 					})
 				}).flat(3),
@@ -78,13 +78,22 @@ class QuestionSeeder {
 					catch (e) {
 						console.log(e.message)
 					}
-				})
+				}),
 			)
+			for (let question of questions) {
+				const answers = await Factory.model('App/Models/Answer').makeMany(5)
+				for (let row of answers) {
+					await row.question().associate(question)
+				}
+				await question.user().associate(user)
+				await question.save()
+			}
+			await user.save()
 			
 			
 		}
 		catch (e) {
-			// console.info(e)
+			console.info(e)
 		}
 	}
 }
