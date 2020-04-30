@@ -2,7 +2,6 @@ import { observer }         from 'mobx-react'
 import React, { Component } from 'react';
 import { Link }             from 'react-router-dom'
 import Input                from '../components/Input'
-import AuthRepository       from '../repositories/AuthRepository'
 import UserState            from '../store/UserState'
 
 @observer
@@ -26,9 +25,8 @@ class RegisterScreen extends Component {
 			loading: true
 		})
 		try {
-			const user = await AuthRepository.register({ password, email, username })
-			UserState.setUser(user)
-			this.props.history.push('/')
+			await UserState.register({ password, email, username })
+			this.props.history.push('/personal')
 		}
 		catch (e) {
 			window.toast.error(e.message)

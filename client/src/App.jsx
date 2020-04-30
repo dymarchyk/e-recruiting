@@ -1,14 +1,17 @@
 import 'animate.css/animate.min.css'
-import { observer }              from 'mobx-react'
-import React, { Component }      from 'react';
-import { BrowserRouter, Route }  from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
+import { observer }                       from 'mobx-react'
+import React, { Component }               from 'react';
+import { hot }                            from 'react-hot-loader/root'
+import { BrowserRouter, Route, Redirect } from 'react-router-dom'
+import { ToastContainer, toast }          from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
-import LoginScreen               from './pages/LoginScreen'
-import RegisterScreen            from './pages/RegisterScreen'
-import SolveQuestionnaire        from './pages/SolveQuestionnaire'
-import AuthRepository            from './repositories/AuthRepository'
-import UserState                 from './store/UserState'
+import Header                             from './components/Header'
+import AnswersScreen                      from './pages/AnswersScreen'
+import LoginScreen                        from './pages/LoginScreen'
+import QuestionnaireScreen                from './pages/QuestionnaireScreen'
+import RegisterScreen                     from './pages/RegisterScreen'
+import SolveQuestionnaire                 from './pages/SolveQuestionnaire'
+import UserState                          from './store/UserState'
 
 window.toast = toast
 
@@ -20,10 +23,35 @@ class App extends Component {
 	}
 	
 	componentDidMount() {
-		AuthRepository.getUser()
-					  .then(user => UserState.setUser(user))
-					  .catch(() => null)
-					  .finally(() => this.setState({ loaded: true }))
+		UserState.getUser()
+				 .finally(() => this.setState({ loaded: true }))
+	}
+	
+	_renderPersonal = () => {
+		return (
+			<>
+				{
+					!window.location.pathname.includes('solve') && <Redirect to={ '/personal' } />
+				}
+				<Route
+					path='/personal'
+					render={ () => (
+						<div>
+							<Route render={ (props) => <Header { ...props } /> } />
+							<Route
+								exact
+								path={ '/personal' }
+								component={ QuestionnaireScreen }
+							/>
+							<Route
+								path={ '/personal/answers' }
+								component={ AnswersScreen }
+							/>
+						</div>
+					) }
+				/>
+			</>
+		)
 	}
 	
 	render() {
@@ -37,11 +65,7 @@ class App extends Component {
 						<>
 							{
 								UserState.isAuthorized
-									? <Route
-										exact
-										path='/'
-										render={ () => <h1>Ok</h1> }
-									/>
+									? this._renderPersonal()
 									: <>
 										<Route
 											exact
@@ -58,6 +82,7 @@ class App extends Component {
 					}
 					
 					<Route
+						exact
 						path={ '/solve/:id' }
 						component={ SolveQuestionnaire }
 					/>
@@ -68,4 +93,4 @@ class App extends Component {
 	}
 }
 
-export default App;
+export default hot(App)

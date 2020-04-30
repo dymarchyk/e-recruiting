@@ -4,6 +4,10 @@
 const Model = use('Model')
 
 class Applicant extends Model {
+	getAnswers(data) {
+		return JSON.parse(data)
+	}
+	
 	questionnaire() {
 		return this.hasOne('App/Models/Questionnaire')
 	}

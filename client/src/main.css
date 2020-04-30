@@ -1,6 +1,9 @@
 :root {
     --gray: #7D7373;
     --primary: #5356D9;
+    --icon: #666B81;
+    --text: #5A5F7C;
+
 }
 
 body {
@@ -10,6 +13,7 @@ body {
     margin: 0;
     line-height: 24px;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 #root {
@@ -186,6 +190,7 @@ body {
 .btn-outline-primary:hover {
     color: #2b309e;
     border: 2px solid #2b309e;
+    background: white;
 }
 
 .text-center {
@@ -205,12 +210,27 @@ body {
     margin-left: auto;
 }
 
+.ml-auto {
+    margin-left: auto;
+}
+
+.mr-auto {
+    margin-right: auto;
+}
+
 .h1 {
     color: var(--primary);
     font-weight: bold;
     font-size: 48px;
     line-height: 65px;
     letter-spacing: 0.05em;
+}
+
+.h2 {
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 33px;
+    color: var(--text);
 }
 
 .list {
@@ -354,4 +374,121 @@ body {
 .questionnaire-content-answer .result-table li span:first-of-type {
     flex: 1 0 auto;
     margin-right: 100px;
+}
+
+/*PERSONAL*/
+
+.header-personal {
+    margin-top: 10px;
+
+    padding-bottom: 40px;
+}
+
+.top-line:after {
+    content: '';
+    background: #E2E7FF;
+    display: block;
+    position: absolute;
+    width: 200vw;
+    height: 1px;
+    top: 100%;
+    left: -50vw;
+    right: 0;
+}
+
+.top-line {
+    position: relative;
+    padding-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-personal .nav .active {
+    border-color: var(--primary);
+    color: var(--primary)
+}
+
+.header-personal .nav a:hover {
+    text-decoration: none;
+    border-color: var(--primary);
+}
+
+.header-personal .nav a {
+    color: var(--text);
+    transition: .3s;
+    border-top: 4px solid transparent;
+    padding: 5px 10px;
+}
+
+.header-personal .nav a:first-of-type {
+    margin-right: 50px;
+}
+
+.search-input input {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    min-width: 400px;
+    border-bottom: 1px solid #C1C6DE;
+    padding: 5px 45px 5px 30px;
+    text-overflow: ellipsis;
+    color: var(--text)
+}
+
+.search-input {
+    position: relative;
+}
+
+.search-input .fa {
+    color: var(--text);
+    position: absolute;
+    right: 25px;
+    top: 9px;
+
+}
+
+.search-input input:focus {
+    outline: none;
+    border-bottom-color: var(--primary);
+}
+
+.tab-header {
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px 0;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tab-header span {
+    padding: 18px 30px;
+}
+
+.tab-header span:not(:first-of-type) {
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.tab {
+    background: #FFFFFF;
+    box-shadow: 0 0 16px rgba(83, 86, 217, 0.1);
+    border-radius: 4px;
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px 0;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.tab span {
+    padding: 18px 30px;
+    font-size: 16px;
+}
+
+.tab span:not(:first-of-type) {
+    text-align: center;
 }

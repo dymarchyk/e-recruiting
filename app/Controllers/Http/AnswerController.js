@@ -42,8 +42,6 @@ class AnswerController {
 			response.status(400).json({ message: e.message })
 		}
 	}
-	
-	
 }
 
 module.exports = AnswerController

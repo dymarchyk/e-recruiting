@@ -7,13 +7,46 @@ const faker = require('faker')
 
 class QuestionnaireController {
 	
-	async index({ auth, response }) {
+	async index({ auth, response, request }) {
 		try {
-			return await Questionnaire.query().where('user_id', auth.user.id).with('applicants').with('questions').fetch()
+			const params = request.get()
+			let page = +params.page || 1
+			return await Questionnaire
+				.query()
+				.where('user_id', auth.user.id)
+				.with('applicants')
+				.with('questions')
+				.paginate(page)
 		}
 		catch (e) {
 			console.log(e)
 			response.status(400).json({ message: e.message })
+		}
+	}
+	
+	async getWithAnswers({ auth, response, request }) {
+		try {
+			const params = request.get()
+			let page = +params.page || 1
+			const quest = await Questionnaire.query().where('user_id', auth.user.id).with('questions').fetch()
+			
+			const applicants = quest.rows.length > 0 && await Applicant.query().whereIn('questionnaire_id', [quest.rows.map(e => e.id)]).fetch()
+			
+			
+			if (quest.rows.length > 0 && applicants.rows.length > 0) {
+				return {
+					data: quest.rows.map(r => ({
+						...r.toJSON(),
+						applicants: applicants.rows.filter(e => e.questionnaire_id === r.id)
+					}))
+				}
+			}
+			return { data: [] }
+			
+		}
+		catch (e) {
+			console.log(e)
+			response.status(404).json({ message: 'Not found' })
 		}
 	}
 	
@@ -137,13 +170,18 @@ class QuestionnaireController {
 			}
 			questionnaire.respond_count++
 			let score = 0
+			let lie_score = 0
 			const applicant = await Applicant.create({ email: data.email, answers: JSON.stringify(data.answers) })
 			await questionnaire.applicants().save(applicant)
 			
 			Object.entries(data.answers.other).forEach(([k, v]) => {
 				score += v.filter(Boolean).length
 			})
-			
+			data.answers.lie_test.forEach(row => {
+				if (row.answer !== row.lie_test_correct_answer) {
+					lie_score++
+				}
+			})
 			/*for (let answer of data.answers.other) {
 			 let currentQuestion = await questionnaire.questions().where('id', +answer.question_id).first()
 			 
@@ -184,6 +222,7 @@ class QuestionnaireController {
 			 }*/
 			
 			applicant.score = score
+			applicant.lie_score = lie_score
 			await applicant.save()
 			await questionnaire.save()
 		}

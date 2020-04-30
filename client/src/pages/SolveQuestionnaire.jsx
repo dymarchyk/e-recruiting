@@ -32,7 +32,7 @@ class SolveQuestionnaire extends Component {
 		lieScores:               0,
 		questionnaireSolved:     false
 	}
-	repository = new QuestionnaireRepository()
+	repository = QuestionnaireRepository
 	
 	checkAndNext = () => {
 		const { currentGroupIndex, currentQuestionSubIndex, currentQuestionIndex, questionnaire: { questions } } = this.state

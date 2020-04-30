@@ -11,7 +11,7 @@ class QuestionnaireSchema extends Schema {
 			
 			table.integer('respond_count').defaultTo(0)
 			table.string('order', 4).notNullable().defaultTo('pwle')
-			
+			table.string('title', 255).notNullable()
 			table.integer('user_id').unsigned()
 			
 			table.foreign('user_id').references('id').inTable('users')

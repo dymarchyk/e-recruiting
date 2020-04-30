@@ -1,6 +1,19 @@
 import Request from '../services/Request'
 
-export default class QuestionnaireRepository {
+class QuestionnaireRepository {
+	getAll(page = 1) {
+		return Request.send({
+			url:    `questionnaire/index?page=${ page }`,
+			method: 'get'
+		})
+	}
+	
+	withAnswers(page) {
+		return Request.send({
+			url:    `questionnaire/completed?page=${ page }`,
+			method: 'get'
+		})
+	}
 	
 	getById = (id) => {
 		return Request.send({
@@ -17,3 +30,6 @@ export default class QuestionnaireRepository {
 		})
 	}
 }
+
+
+export default new QuestionnaireRepository()

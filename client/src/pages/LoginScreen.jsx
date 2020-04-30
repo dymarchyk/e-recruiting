@@ -1,9 +1,10 @@
+import { observer }         from 'mobx-react'
 import React, { Component } from 'react';
 import { Link }             from 'react-router-dom'
 import Input                from '../components/Input'
-import AuthRepository       from '../repositories/AuthRepository'
 import UserState            from '../store/UserState'
 
+@observer
 class LoginScreen extends Component {
 	state = { email: '', password: '', loading: false }
 	
@@ -14,8 +15,8 @@ class LoginScreen extends Component {
 			loading: true
 		})
 		try {
-			const user = await AuthRepository.login({ email, password })
-			UserState.setUser(user)
+			await UserState.login({ email, password })
+			this.props.history.push('/personal')
 		}
 		catch (e) {
 			window.toast.error(e.message)

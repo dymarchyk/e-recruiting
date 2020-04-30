@@ -47,5 +47,7 @@ Factory.blueprint('App/Models/Applicant', faker => {
 })
 
 Factory.blueprint('App/Models/Questionnaire', faker => {
-	return {}
+	return {
+		title: faker.word(10)
+	}
 })

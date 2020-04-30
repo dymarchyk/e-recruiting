@@ -47,6 +47,7 @@ Route.group(() => {
 
 Route.group(() => {
 	Route.get('/index', 'QuestionnaireController.index').middleware(['auth'])
+	Route.get('/completed', 'QuestionnaireController.getWithAnswers').middleware(['auth'])
 	Route.get('/show/:id', 'QuestionnaireController.show')
 	Route.post('/create', 'QuestionnaireController.create').middleware(['auth']).validator('QuestionnaireCreate')
 	Route.post('/complete/:id', 'QuestionnaireController.complete').validator('QuestionnaireComplete')

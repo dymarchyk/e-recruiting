@@ -4,6 +4,7 @@ const Applicant = use('App/Models/Applicant')
 const Questionnaire = use('App/Models/Questionnaire')
 const User = use('App/Models/User')
 const { groupBy } = require('lodash')
+
 class QuestionController {
 	
 	async index({ auth }) {
