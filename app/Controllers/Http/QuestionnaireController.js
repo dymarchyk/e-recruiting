@@ -11,11 +11,13 @@ class QuestionnaireController {
 		try {
 			const params = request.get()
 			let page = +params.page || 1
+			const q = params.q || ''
 			return await Questionnaire
 				.query()
 				.where('user_id', auth.user.id)
 				.with('applicants')
 				.with('questions')
+				.where('title', 'like', `%${ q }%`)
 				.paginate(page)
 		}
 		catch (e) {
@@ -28,20 +30,17 @@ class QuestionnaireController {
 		try {
 			const params = request.get()
 			let page = +params.page || 1
-			const quest = await Questionnaire.query().where('user_id', auth.user.id).with('questions').fetch()
-			
-			const applicants = quest.rows.length > 0 && await Applicant.query().whereIn('questionnaire_id', [quest.rows.map(e => e.id)]).fetch()
-			
-			
-			if (quest.rows.length > 0 && applicants.rows.length > 0) {
-				return {
-					data: quest.rows.map(r => ({
-						...r.toJSON(),
-						applicants: applicants.rows.filter(e => e.questionnaire_id === r.id)
-					}))
-				}
+			const q = params.q || ''
+			const questionnaires = Questionnaire
+				.query()
+				.where('user_id', auth.user.id)
+				.where('respond_count', '>', 0)
+				.with('questions')
+				.with('applicants', query => q.includes('@') && query.where('email', 'like', `%${ q.replace('@', '') }%`))
+			if (!q.includes('@')) {
+				questionnaires.where('title', 'like', `%${ q }%`)
 			}
-			return { data: [] }
+			return await questionnaires.paginate(page, 5)
 			
 		}
 		catch (e) {
@@ -53,9 +52,9 @@ class QuestionnaireController {
 	async create({ request, auth, response }) {
 		try {
 			const user = await auth.getUser()
-			const data = request.only(['question_id'])
+			const data = request.only(['question_id', 'title'])
 			
-			const questionnaire = await Questionnaire.create()
+			const questionnaire = await Questionnaire.create(data)
 			await questionnaire.user().associate(user)
 			await questionnaire.questions().attach(data.question_id)
 			await questionnaire.reload()

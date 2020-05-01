@@ -3,7 +3,7 @@
     --primary: #5356D9;
     --icon: #666B81;
     --text: #5A5F7C;
-
+    --text-alt: #645A5A;
 }
 
 body {
@@ -193,29 +193,8 @@ body {
     background: white;
 }
 
-.text-center {
-    text-align: center;
-}
-
-.d-flex {
-    display: flex;
-}
-
-.d-bloc {
-    display: block;
-}
-
-.mx-auto {
-    margin-right: auto;
-    margin-left: auto;
-}
-
-.ml-auto {
-    margin-left: auto;
-}
-
-.mr-auto {
-    margin-right: auto;
+.min-vh-80 {
+    min-height: 80vh;
 }
 
 .h1 {
@@ -484,6 +463,11 @@ body {
     margin-bottom: 8px;
 }
 
+.tab.tab-not-found {
+    text-align: center;
+    grid-template-columns: 1fr;
+}
+
 .tab span {
     padding: 18px 30px;
     font-size: 16px;
@@ -491,4 +475,55 @@ body {
 
 .tab span:not(:first-of-type) {
     text-align: center;
+}
+
+.cards {
+    margin: 40px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px 0;
+}
+
+.card {
+    padding: 24px;
+    background: white;
+    box-shadow: 0 0 32px rgba(83, 86, 217, 0.1);
+    border-radius: 10px;
+    border: none;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.card h3 {
+    font-weight: bold;
+    text-align: center;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.card .percent {
+    font-size: 16px;
+    color: var(--primary);
+}
+
+.card .email {
+    color: var(--text-alt);
+    font-size: 16px;
+}
+
+.progress.bg-primary {
+    background: var(--primary);
+}
+
+.progress {
+    height: 8px;
+    border-radius: 6px;
+    background: #F2F5FF;
+}
+
+.footer {
+    padding-top: 80px;
+    padding-bottom: 30px;
+    font-size: 16px;
+    color: var(--text);
 }

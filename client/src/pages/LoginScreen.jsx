@@ -16,7 +16,7 @@ class LoginScreen extends Component {
 		})
 		try {
 			await UserState.login({ email, password })
-			this.props.history.push('/personal')
+			this.props.history.push('/')
 		}
 		catch (e) {
 			window.toast.error(e.message)

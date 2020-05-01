@@ -1,16 +1,22 @@
 import Request from '../services/Request'
 
 class QuestionnaireRepository {
-	getAll(page = 1) {
+	getAll(page = 1, query) {
+		const params = new URLSearchParams()
+		params.append('page', page.toString())
+		query && params.append('q', query.toString().trim())
 		return Request.send({
-			url:    `questionnaire/index?page=${ page }`,
+			url:    `questionnaire/index?${ params.toString() }`,
 			method: 'get'
 		})
 	}
 	
-	withAnswers(page) {
+	withAnswers(page = 1, query = null) {
+		const params = new URLSearchParams()
+		params.append('page', page.toString())
+		query && params.append('q', query.toString().trim())
 		return Request.send({
-			url:    `questionnaire/completed?page=${ page }`,
+			url:    `questionnaire/completed?${ params.toString() } `,
 			method: 'get'
 		})
 	}

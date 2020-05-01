@@ -26,7 +26,7 @@ class RegisterScreen extends Component {
 		})
 		try {
 			await UserState.register({ password, email, username })
-			this.props.history.push('/personal')
+			this.props.history.push('/')
 		}
 		catch (e) {
 			window.toast.error(e.message)

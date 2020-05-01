@@ -1,14 +1,16 @@
 FROM node:latest
+ENV NODE_ENV = production
 
-ENV HOME=/app
+ENV APP=/app
 RUN mkdir /app
 
-COPY . $HOME
+COPY . $APP
 
-WORKDIR $HOME
+WORKDIR $APP
 
 RUN yarn global add @adonisjs/cli
 RUN yarn
 RUN yarn build
-CMD ["adonis", "serve", "-p"]
+EXPOSE $PORT
+CMD ["adonis", "serve", "--dev"]
 

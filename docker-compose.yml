@@ -22,6 +22,7 @@ services:
       dockerfile: Dockerfile
     container_name: app
     env_file: .env
+    restart: always
     volumes:
       - $PWD:/app
     ports:

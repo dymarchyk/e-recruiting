@@ -47,7 +47,10 @@ class Header extends Component {
 								<DropdownItem
 									onClick={ () => {
 										UserState.logout()
-												 .finally(() => this.props.history.push('/'))
+												 .finally(() => {
+													 this.props.history.push('/')
+													 window.location.reload()
+												 })
 									} }
 								>
 									Выйти
@@ -60,9 +63,9 @@ class Header extends Component {
 				<nav className='nav'>
 					<NavLink
 						exact
-						to={ '/personal' }
+						to={ '/' }
 					>Анкеты</NavLink>
-					<NavLink to={ '/personal/answers' }>Ответы</NavLink>
+					<NavLink to={ '/answers' }>Ответы</NavLink>
 				</nav>
 			</header>
 		)
