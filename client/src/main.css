@@ -4,6 +4,8 @@
     --icon: #666B81;
     --text: #5A5F7C;
     --text-alt: #645A5A;
+    --blue: var(--primary);
+    --muted: #C1C6DE;
 }
 
 body {
@@ -26,10 +28,15 @@ body {
     display: flex;
     flex-direction: column;
     border: 1px solid transparent;
-    border-bottom-color: #C1C6DE;
+    border-bottom-color: var(--muted);
     height: 48px;
     transition: .2s;
     margin-bottom: 30px;
+}
+
+.input.textarea {
+    border-bottom-color: transparent;
+    height: auto;
 }
 
 .input input {
@@ -42,7 +49,13 @@ body {
     z-index: 2;
 }
 
-.input input:focus {
+.input textarea {
+    padding: 20px;
+    border-radius: 25px;
+    border-color: var(--primary);
+}
+
+.input input:focus, .input textarea:focus {
     outline: none;
     border: none;
 }
@@ -86,7 +99,8 @@ body {
 }
 
 .checkbox label {
-    padding-right: 10px;
+    padding: 0 10px 0 0;
+    margin: 0;
 }
 
 .checkbox-icon.square {
@@ -167,6 +181,13 @@ body {
     cursor: not-allowed;
 }
 
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.font-alt {
+    color: var(--text-alt) !important;
+}
 
 .btn:focus {
     outline: none
@@ -404,12 +425,19 @@ body {
     margin-right: 50px;
 }
 
+.custom-dropdown {
+    border-bottom: 1px solid var(--muted);
+    color: var(--text);
+    padding: 11px 30px;
+    cursor: pointer;
+}
+
 .search-input input {
     border-left: none;
     border-right: none;
     border-top: none;
     min-width: 400px;
-    border-bottom: 1px solid #C1C6DE;
+    border-bottom: 1px solid var(--muted);
     padding: 5px 45px 5px 30px;
     text-overflow: ellipsis;
     color: var(--text)
@@ -504,6 +532,8 @@ body {
 .card .percent {
     font-size: 16px;
     color: var(--primary);
+    width: 50px;
+    white-space: nowrap;
 }
 
 .card .email {
@@ -526,4 +556,88 @@ body {
     padding-bottom: 30px;
     font-size: 16px;
     color: var(--text);
+}
+
+.fancy-block {
+    background: #FFFFFF;
+    box-shadow: 0 0 32px rgba(83, 86, 217, 0.1);
+    border-radius: 10px;
+}
+
+.question-actions {
+    border-left-color: #E1E3EF;
+    border-left-width: 1px;
+    border-left-style: solid;
+}
+
+
+.pointer {
+    cursor: pointer;
+}
+
+.old-question li {
+    color: var(--text-alt);
+    display: grid;
+    grid-template-columns: 10% 1fr;
+    grid-gap: 0 16px;
+}
+
+.old-question li b {
+    color: #4C5583;
+    text-align: right;
+}
+
+.pyramid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pyramid div {
+    margin-bottom: 10px;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    width: 100%;
+    user-select: none;
+}
+
+.pyramid div span:first-of-type {
+    border-top: 2px solid #CBBBDB;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #CBBBDB;
+    display: block;
+    width: 20px;
+    height: 10px;
+    cursor: pointer;
+}
+
+.pyramid .item-1, .pyramid .item-1.active {
+    background-image: url("./images/Intersect.png");
+    color: #FC8557;
+}
+
+.pyramid .item-2, .pyramid .item-2.active {
+    background-image: url("./images/Intersect (1).png");
+    color: #C47582;
+}
+
+.pyramid .item-3, .pyramid .item-3.active {
+    background-image: url("./images/Intersect (2).png");
+    color: #8B66AE;
+}
+
+.pyramid .item-4, .pyramid .item-4.active {
+    background-image: url("./images/Intersect (3).png");
+    color: #5356D9;
 }

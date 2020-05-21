@@ -43,7 +43,7 @@ class LoginScreen extends Component {
 						className='form'
 						action='#!'
 					>
-						<h1 className='h1 text-center'>Увійти</h1>
+						<h1 className='h1 text-center'>Sign in</h1>
 						<Input
 							caption='Email'
 							required
@@ -52,7 +52,7 @@ class LoginScreen extends Component {
 							onChange={ e => this.setState({ email: e.target.value }) }
 						/>
 						<Input
-							caption='Пароль'
+							caption='Password'
 							required
 							type='password'
 							value={ password }
@@ -64,11 +64,11 @@ class LoginScreen extends Component {
 						>
 							{
 								loading
-									? 'Загрузка...'
-									: 'Войти'
+									? 'Loading...'
+									: 'Sign in'
 							}
 						</button>
-						<Link to={ '/' }>Регистрация</Link>
+						<Link to={ '/' }>Registration</Link>
 					</form>
 				</div>
 				<div className='auth-image'>

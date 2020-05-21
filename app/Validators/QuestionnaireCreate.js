@@ -3,9 +3,17 @@
 class QuestionnaireCreate {
 	get rules() {
 		return {
-			'question_id':   'required|array',
-			'question_id.*': 'required|exists:questions,id',
-			'title':         'required'
+			'title':                           'required|string',
+			'order':                           'required|min:4,max:4',
+			'questions':                       'required|array',
+			'questions.*.title':               'required|string',
+			'questions.*.type':                'required|string',
+			'questions.*.correct_text_answer': 'string',
+			'questions.*.answers':             'array',
+			'questions.*.answers.*.text':      'string',
+			'questions.*.answers.*.isCorrect': 'boolean',
+			
+			
 		}
 	}
 	

@@ -12,8 +12,6 @@ class QuestionSchema extends Schema {
 			
 			table.integer('user_id').unsigned()
 			
-			table.text('user_answer', 'longtext')
-			
 			table.string('title', 255)
 			table.string('type', 255).notNullable()
 			table.string('answer_type', 255).notNullable().defaultTo(Question.ANSWER_TYPES.boolean)

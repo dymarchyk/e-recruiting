@@ -11,8 +11,9 @@ class ApplicantSchema extends Schema {
 			
 			table.string('email', 255).notNullable()
 			table.string('notes', 255)
-			table.float('score').defaultTo(0)
-			table.float('lie_score').defaultTo(0)
+			table.integer('score').defaultTo(0)
+			table.integer('lie_score').defaultTo(0)
+			table.integer('hard_skills_score').defaultTo(0)
 			
 			table.integer('questionnaire_id').unsigned()
 			

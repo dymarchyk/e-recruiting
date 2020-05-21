@@ -1,9 +1,14 @@
-import { observer }                                                         from 'mobx-react'
-import React, { Component }                                                 from 'react'
-import ReactAvatar                                                          from 'react-avatar';
-import { NavLink }                                                          from 'react-router-dom'
-import { DropdownToggle, UncontrolledDropdown, DropdownMenu, DropdownItem } from 'reactstrap'
-import UserState                                                            from '../store/UserState'
+import { observer }         from 'mobx-react'
+import React, { Component } from 'react'
+import ReactAvatar          from 'react-avatar';
+import { NavLink }          from 'react-router-dom'
+import {
+	DropdownToggle,
+	UncontrolledDropdown,
+	DropdownMenu,
+	DropdownItem
+}                           from 'reactstrap'
+import UserState            from '../store/UserState'
 
 @observer
 class Header extends Component {
@@ -19,7 +24,7 @@ class Header extends Component {
 						<button
 							className='btn my-2 btn-outline-primary'
 							onClick={ () => this.props.history.push('/create') }
-						>Создать анкету
+						>Create questionnaire
 						</button>
 						<UncontrolledDropdown className='ml-5'>
 							<DropdownToggle
@@ -41,9 +46,6 @@ class Header extends Component {
 								/>
 							</DropdownToggle>
 							<DropdownMenu>
-								<DropdownItem>
-									Профиль
-								</DropdownItem>
 								<DropdownItem
 									onClick={ () => {
 										UserState.logout()
@@ -53,7 +55,7 @@ class Header extends Component {
 												 })
 									} }
 								>
-									Выйти
+									Log out
 								</DropdownItem>
 							</DropdownMenu>
 						</UncontrolledDropdown>
@@ -64,8 +66,8 @@ class Header extends Component {
 					<NavLink
 						exact
 						to={ '/' }
-					>Анкеты</NavLink>
-					<NavLink to={ '/answers' }>Ответы</NavLink>
+					>Questionnaires</NavLink>
+					<NavLink to={ '/answers' }>Answers</NavLink>
 				</nav>
 			</header>
 		)

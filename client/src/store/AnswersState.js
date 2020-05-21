@@ -1,4 +1,7 @@
-import { observable, action }  from 'mobx'
+import {
+	observable,
+	action
+}                              from 'mobx'
 import QuestionnaireRepository from '../repositories/QuestionnaireRepository'
 
 class AnswersState {
@@ -18,8 +21,10 @@ class AnswersState {
 	async getAnswers(page = 1) {
 		try {
 			const res = await this.repository.withAnswers(page)
-			this.data = Array.isArray(this.data) && page > 1 ? [...this.data, ...res.data] : res.data
-			this.lastAnswers = res.data.slice(0, 2)
+			this.data = Array.isArray(this.data) && page > 1
+				? [...this.data, ...res.data]
+				: res.data
+			this.lastAnswers = res.data.slice(-3)
 			this.page = res.page
 			this.lastPage = res.lastPage
 			this.total = res.total

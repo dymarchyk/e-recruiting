@@ -35,6 +35,14 @@ class QuestionnaireRepository {
 			data
 		})
 	}
+	
+	create = data => {
+		return Request.send({
+			url:    'questionnaire/create',
+			method: 'post',
+			data
+		})
+	}
 }
 
 

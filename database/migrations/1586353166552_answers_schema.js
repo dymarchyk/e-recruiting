@@ -11,9 +11,9 @@ class AnswersSchema extends Schema {
 			
 			table.integer('question_id').unsigned().references('id').inTable('questions').onDelete('cascade')
 			
-			table.text('content', 'longtext').notNullable()
-			
-			table.string('value', 50)
+			table.text('content', 'longtext').defaultTo('')
+			table.boolean('isCorrect').defaultTo(false)
+			table.text('user_answer', 'longtext').defaultTo('')
 		})
 	}
 	

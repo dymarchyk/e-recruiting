@@ -1,9 +1,14 @@
 import 'animate.css/animate.min.css'
 import { observer }              from 'mobx-react'
 import React, { Component }      from 'react'
-import { hot }                   from 'react-hot-loader/root'
-import { BrowserRouter, Route }  from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
+import {
+	BrowserRouter,
+	Route
+}                                from 'react-router-dom'
+import {
+	ToastContainer,
+	toast
+}                                from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header                    from './components/Header'
 import AnswersScreen             from './pages/AnswersScreen'
@@ -25,6 +30,7 @@ class App extends Component {
 	
 	componentDidMount() {
 		UserState.getUser()
+				 .catch(() => null)
 				 .finally(() => this.setState({ loaded: true }))
 	}
 	
@@ -109,4 +115,4 @@ class App extends Component {
 	}
 }
 
-export default hot(App)
+export default App

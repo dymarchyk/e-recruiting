@@ -1,22 +1,31 @@
-import classNames                      from 'classnames'
-import React, { forwardRef, useState } from 'react'
+import classNames from 'classnames'
+import React, {
+	forwardRef,
+	useState
+}                 from 'react'
 
 export default forwardRef((props, ref) => {
 	const [focused, setFocus] = useState(!!props?.value)
 	
-	const { postScript, caption, ...rest } = props
+	const { postScript, caption, className, underline, inputClassName, style, ...rest } = props
+	
+	const Tag = rest?.type === 'textarea'
+		? 'textarea'
+		: 'input'
 	
 	return (
 		<div
-			className={ classNames('input', {
-				focused
+			style={ style }
+			className={ classNames('input', className, rest?.type, {
+				focused: focused && !underline
 			}) }
 		>
 			{ caption && <span className='label'>{ caption }</span> }
-			<input
+			<Tag
 				onBlur={ () => setFocus(!!props?.value) }
 				onFocus={ () => setFocus(true) }
 				{ ...rest }
+				className={ inputClassName }
 				ref={ ref }
 			/>
 			

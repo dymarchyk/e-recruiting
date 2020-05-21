@@ -18,7 +18,7 @@ class RegisterScreen extends Component {
 		const { confirm_password, password, email, username } = this.state
 		
 		if (password !== confirm_password) {
-			return window.toast.error('Пароли не совпадают')
+			return window.toast.error('Passwords don`t match.')
 		}
 		
 		this.setState({
@@ -51,28 +51,28 @@ class RegisterScreen extends Component {
 						action='#'
 						onSubmit={ e => this.register }
 					>
-						<h1 className='h1 text-center'>Увійти</h1>
+						<h1 className='h1 text-center'>Registration</h1>
 						<Input
 							caption='E-mail'
 							value={ email }
 							onChange={ e => this.setState({ email: e.target.value }) }
 						/>
 						<Input
-							caption='Имя пользователя'
+							caption='Name'
 							required
 							type='text'
 							value={ username }
 							onChange={ e => this.setState({ username: e.target.value }) }
 						/>
 						<Input
-							caption='Пароль'
+							caption='Password'
 							required
 							type='password'
 							value={ password }
 							onChange={ e => this.setState({ password: e.target.value }) }
 						/>
 						<Input
-							caption='Повторите пароль'
+							caption='Confirm password'
 							required
 							type='password'
 							value={ confirm_password }
@@ -84,11 +84,11 @@ class RegisterScreen extends Component {
 							onClick={ this.register }
 						>{
 							loading
-								? 'Загрузка...'
-								: 'Регистрация'
+								? 'Loading...'
+								: 'Register'
 						}</button>
 						
-						<Link to={ '/login' }>Войти</Link>
+						<Link to={ '/login' }>Sign in</Link>
 					</form>
 				</div>
 				<div className='auth-image'>

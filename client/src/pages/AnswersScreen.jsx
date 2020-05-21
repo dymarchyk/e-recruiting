@@ -1,10 +1,13 @@
-import { debounce, last } from 'lodash'
-import { observable } from 'mobx'
-import { observer } from 'mobx-react'
-import React, { Component, Fragment } from 'react';
-import { Progress } from 'reactstrap'
+import { debounce }       from 'lodash'
+import { observable }     from 'mobx'
+import { observer }       from 'mobx-react'
+import React, {
+	Component,
+	Fragment
+}                         from 'react';
+import { Progress }       from 'reactstrap'
 import { QUESTION_TYPES } from '../constants/questions'
-import AnswersState from '../store/AnswersState'
+import AnswersState       from '../store/AnswersState'
 
 @observer
 class AnswersScreen extends Component {
@@ -19,25 +22,25 @@ class AnswersScreen extends Component {
 	
 	render() {
 		return (
-			<div className='container min-vh-80'>
+			<div className='container min-vh-80 animated fadeIn'>
 				{
 					AnswersState.lastAnswers.length > 0 &&
 					<>
-						<h1 className='h1'>Последние ответы</h1>
+						<h1 className='h1'>Last answers</h1>
 						<div className='cards'>
 							{
 								AnswersState.lastAnswers?.map(row => {
-									const applicant = last(row.applicants)
+									const applicant = row.applicants[0]
 									const maxHardSkill = row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length
-									const hardSkillScore = Object.keys(applicant?.answers?.hard_skill ?? {}).length
+									
 									return (
 										<div
 											key={ row.id }
 											className='card'
 										>
-											<h3>Lorem ipsum dolor.</h3>
+											<h3>{ row.title }</h3>
 											<div className='mb-3'>
-												<b>Личность</b>
+												<b>Personality</b>
 												<div className='d-flex align-items-center justify-content-between'>
 													<Progress
 														className='flex-fill'
@@ -50,20 +53,20 @@ class AnswersScreen extends Component {
 											{
 												maxHardSkill > 0 &&
 												<div className='mb-3'>
-													<b>Навыки</b>
+													<b>Hard skills</b>
 													<div className='d-flex align-items-center justify-content-between'>
 														<Progress
 															className='flex-fill'
 															color='primary'
-															value={ Math.ceil(hardSkillScore / maxHardSkill * 100) }
+															value={ Math.ceil(applicant.hard_skills_score / maxHardSkill * 100) }
 														/>
-														<b className='percent pl-2'>{ Math.ceil(hardSkillScore / maxHardSkill * 100) }%</b>
+														<b className='percent pl-2'>{ Math.ceil(applicant.hard_skills_score / maxHardSkill * 100) }%</b>
 													</div>
 												</div>
 											}
 											
 											<div className='mb-3'>
-												<b>Доверие</b>
+												<b>Plausibility</b>
 												<div className='d-flex align-items-center justify-content-between'>
 													<Progress
 														className='flex-fill'
@@ -73,7 +76,7 @@ class AnswersScreen extends Component {
 													<b className='percent pl-2'>{ Math.ceil(applicant.lie_score / 8 * 100) }%</b>
 												</div>
 											</div>
-											<span className='subtitle'>Респондент:</span>
+											<span className='subtitle'>Applicant:</span>
 											<span className='email'>{ applicant.email }</span>
 										</div>
 									)
@@ -86,7 +89,7 @@ class AnswersScreen extends Component {
 				
 				
 				<div className='d-flex align-items-center justify-content-between'>
-					<h1 className='h1'>Ответы</h1>
+					<h1 className='h1'>Answers</h1>
 					
 					{
 						(AnswersState.data?.length > 0 || AnswersState.filtered) &&
@@ -97,10 +100,14 @@ class AnswersScreen extends Component {
 									this.query = e.target.value
 									this.search()
 								} }
-								placeholder='Поиск...'
+								placeholder='Search...'
 								type='text'
 							/>
-							<span className={ `fa ${ AnswersState.filtering ? 'fa-spinner fa-spin' : 'fa-search' }` } />
+							<span
+								className={ `fa ${ AnswersState.filtering
+									? 'fa-spinner fa-spin'
+									: 'fa-search' }` }
+							/>
 						</div>
 					}
 				</div>
@@ -113,10 +120,10 @@ class AnswersScreen extends Component {
 								<Fragment key={ row.id }>
 									<h2 className='h2 mt-4'>{ row.title }</h2>
 									<div className='tab-header'>
-										<span>Респондент</span>
-										<span>Личность</span>
-										<span>Навыки</span>
-										<span>Доверие</span>
+										<span>Applicant</span>
+										<span>Personality</span>
+										<span>Hard skills</span>
+										<span>Plausibility</span>
 									</div>
 									
 									{
@@ -127,7 +134,7 @@ class AnswersScreen extends Component {
 											>
 												<span>{ col.email }</span>
 												<span>{ col.score }/96</span>
-												<span>{ Object.keys(col?.answers?.hard_skill ?? {}).length }/{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length }</span>
+												<span>{ col.hard_skills_score }/{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length }</span>
 												<span>{ col.lie_score }/8</span>
 											</div>
 										))
@@ -138,7 +145,7 @@ class AnswersScreen extends Component {
 						{
 							AnswersState.data?.length === 0 && AnswersState.filtered &&
 							<div className='tab tab-not-found'>
-								<span>Ничего не надено</span>
+								<span>Nothing found</span>
 							</div>
 						}
 					</div>
@@ -148,8 +155,8 @@ class AnswersScreen extends Component {
 					AnswersState.data && AnswersState.page < AnswersState.lastPage &&
 					<button
 						onClick={ () => AnswersState.getAnswers(AnswersState.page + 1) }
-						className='btn btn-outline-primary mt-3 mx-auto d-bloc'
-					>Показать еще</button>
+						className='btn btn-outline-primary mt-3 mx-auto d-block'
+					>Show more</button>
 				}
 				
 				{
@@ -163,9 +170,9 @@ class AnswersScreen extends Component {
 						/>
 						
 						<button
-							onClick={ () => this.props.history.push('//create') }
-							className='btn btn-outline-primary mx-auto d-bloc'
-						>Создать первую анкету
+							onClick={ () => this.props.history.push('/create') }
+							className='btn btn-outline-primary mx-auto d-block'
+						>Create first questionnaire
 						</button>
 					</div>
 				}

@@ -36,7 +36,6 @@ Factory.blueprint('App/Models/Question', faker => {
 Factory.blueprint('App/Models/Answer', faker => {
 	return {
 		content: faker.word(),
-		value:   faker.guid()
 	}
 })
 

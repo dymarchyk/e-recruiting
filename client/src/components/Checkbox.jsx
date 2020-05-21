@@ -1,12 +1,12 @@
-import classNames from 'classnames'
+import classNames            from 'classnames'
 import React, { forwardRef } from 'react'
 
 export default forwardRef((props, ref) => {
-	const { isSelected, text, ...rest } = props
+	const { isSelected, text, className, ...rest } = props
 	return (
 		<div
 			onClick={ props.onChange }
-			className='checkbox'
+			className={ classNames('checkbox', className) }
 		>
 			<label>
 				<input

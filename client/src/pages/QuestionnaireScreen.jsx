@@ -2,6 +2,7 @@ import { debounce }         from 'lodash'
 import { observable }       from 'mobx'
 import { observer }         from 'mobx-react'
 import React, { Component } from 'react'
+import { CopyToClipboard }  from 'react-copy-to-clipboard';
 import { QUESTION_TYPES }   from '../constants/questions'
 import QuestionnaireState   from '../store/QuestionnaireState'
 
@@ -18,9 +19,9 @@ class QuestionnaireScreen extends Component {
 	
 	render() {
 		return (
-			<div className='container min-vh-80'>
+			<div className='container min-vh-80 animated fadeIn'>
 				<div className='d-flex align-items-center justify-content-between'>
-					<h1 className='h1'>Анкеты</h1>
+					<h1 className='h1'>Questionnares</h1>
 					{
 						(QuestionnaireState.data?.length > 0 || QuestionnaireState.filtered) &&
 						<div className='search-input'>
@@ -31,10 +32,14 @@ class QuestionnaireScreen extends Component {
 									this.search()
 								} }
 								onKeyUp={ e => e.keyCode === 13 && this.search() }
-								placeholder='Поиск...'
+								placeholder='Search...'
 								type='text'
 							/>
-							<span className={ `fa ${ QuestionnaireState.filtering ? 'fa-spinner fa-spin' : 'fa-search' }` } />
+							<span
+								className={ `fa ${ QuestionnaireState.filtering
+									? 'fa-spinner fa-spin'
+									: 'fa-search' }` }
+							/>
 						</div>
 					}
 				
@@ -44,10 +49,10 @@ class QuestionnaireScreen extends Component {
 					(QuestionnaireState.data?.length > 0 || QuestionnaireState.filtered) &&
 					<div className='mb-5'>
 						<div className='tab-header'>
-							<span>Название</span>
-							<span>Личность</span>
-							<span>Навыки</span>
-							<span>Ответов</span>
+							<span>Title</span>
+							<span>Personality</span>
+							<span>Hard skills</span>
+							<span>Respond count</span>
 						</div>
 						
 						{
@@ -56,7 +61,28 @@ class QuestionnaireScreen extends Component {
 									key={ row.id }
 									className='tab'
 								>
-									<span>{ row.title || '-' }</span>
+									<span className='justify-content-between d-flex align-items-center'>
+										{ row.title || '-' }
+										<span className='d-flex justify-content-end align-items-center p-0'>
+											<CopyToClipboard
+												onCopy={ () => window.toast.success('Link copied!') }
+												text={ `${ window.location.origin }/solve/${ row.id }` }
+											>
+											<span
+												title='Copy link'
+												className='pointer p-2 fa fa-copy text-primary'
+											/>
+										</CopyToClipboard>
+									<a
+										className='p-2'
+										href={ `solve/${ row.id }` }
+										target='_blank'
+										rel='noopener noreferrer'
+										title='Open in new tab'
+									><span className='fa fa-link p-0' /></a>
+										</span>
+									</span>
+									
 									<span>{ row.order.toUpperCase() }</span>
 									<span>{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length ||
 											<span className='fa fa-minus' /> }</span>
@@ -67,7 +93,7 @@ class QuestionnaireScreen extends Component {
 						{
 							QuestionnaireState.data?.length === 0 && QuestionnaireState.filtered &&
 							<div className='tab tab-not-found'>
-								<span>Ничего не найдено</span>
+								<span>Nothing found</span>
 							</div>
 						}
 					</div>
@@ -76,8 +102,8 @@ class QuestionnaireScreen extends Component {
 					QuestionnaireState.data && QuestionnaireState.page < QuestionnaireState.last &&
 					<button
 						onClick={ () => QuestionnaireState.getAll(QuestionnaireState.page + 1) }
-						className='btn btn-outline-primary mt-3 mx-auto d-bloc'
-					>Показать еще</button>
+						className='btn btn-outline-primary mt-3 mx-auto d-block'
+					>Show more</button>
 				}
 				
 				{
@@ -92,8 +118,8 @@ class QuestionnaireScreen extends Component {
 						
 						<button
 							onClick={ () => this.props.history.push('/create') }
-							className='btn btn-outline-primary mx-auto d-bloc'
-						>Создать первую анкету
+							className='btn btn-outline-primary mx-auto d-block'
+						>Create first questionnaire
 						</button>
 					</div>
 				}

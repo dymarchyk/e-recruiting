@@ -1,5 +1,9 @@
-import { observable, action, computed } from 'mobx'
-import AuthRepository                   from '../repositories/AuthRepository'
+import {
+	observable,
+	action,
+	computed
+}                     from 'mobx'
+import AuthRepository from '../repositories/AuthRepository'
 
 class UserState {
 	repository = AuthRepository
@@ -13,12 +17,7 @@ class UserState {
 	
 	@action
 	async getUser() {
-		try {
-			this.user = await this.repository.getUser()
-		}
-		catch (e) {
-		
-		}
+		this.user = await this.repository.getUser()
 	}
 	
 	@action

@@ -29,7 +29,7 @@ services:
       - 3333:3333
     networks:
       - default
-    depends_on:
+    links:
       - mysql
 networks:
   default:

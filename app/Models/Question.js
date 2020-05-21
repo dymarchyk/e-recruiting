@@ -43,15 +43,6 @@ class Question extends Model {
 	answers() {
 		return this.hasMany('App/Models/Answer')
 	}
-	
-	// correct_answer(){
-	// 	return this.hasMany('App/Models/Answer')
-	// }
-	
-	// questionnaire() {
-	// 	return this.belongsTo('App/Models/Questionnaire')
-	// }
-	
 }
 
 module.exports = Question

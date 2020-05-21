@@ -1,8 +1,11 @@
-import React, { Component }             from 'react'
-import Checkbox                         from '../components/Checkbox'
-import Input                            from '../components/Input'
-import { QUESTION_TYPES, ANSWER_TYPES } from '../constants/questions'
-import QuestionnaireRepository          from '../repositories/QuestionnaireRepository'
+import React, { Component }    from 'react'
+import Checkbox                from '../components/Checkbox'
+import Input                   from '../components/Input'
+import {
+	QUESTION_TYPES,
+	ANSWER_TYPES
+}                              from '../constants/questions'
+import QuestionnaireRepository from '../repositories/QuestionnaireRepository'
 
 const isDevMode = process.env.NODE_ENV === 'development'
 
@@ -80,11 +83,13 @@ class SolveQuestionnaire extends Component {
 			const [first, second, third, fourth] = questionOrder
 			const map = Object.fromEntries(counts)
 			
+			
 			switch (currentGroupIndex) {
 				default:
+					break
 				case 0:
 					const max = counts[0]
-					if (counts.map(e => e[1]).every(r => r.length > 0) && [first, second].includes(max[0].replace(/\d/, ''))) {
+					if ([first, second].includes(max[0].replace(/\d/, ''))) {
 						this.setState({
 							scores,
 							suitePassed: true,
@@ -160,7 +165,10 @@ class SolveQuestionnaire extends Component {
 			email,
 			answers: {
 				[QUESTION_TYPES.lie_test]:   answers.lie_test,
-				[QUESTION_TYPES.hard_skill]: answers.hard_skills,
+				[QUESTION_TYPES.hard_skill]: Object.keys(answers.hard_skills).map(row => ({
+					question_id: row,
+					answers:     answers.hard_skills[row]
+				})),
 				other:                       answers.character
 			}
 		}
@@ -184,13 +192,14 @@ class SolveQuestionnaire extends Component {
 		
 		if (isText) {
 			return <Input
-				caption='Введите Ваш ответ'
+				caption='Enter your answer'
 				value={ userAnswers[0] ?? '' }
 				onChange={ e => {
 					userAnswers[0] = e.target.value
 					this.setState({
 						answers: {
-							...answers, hard_skills: {
+							...answers,
+							hard_skills: {
 								...answers.hard_skills,
 								[question.id]: [...userAnswers]
 							}
@@ -247,13 +256,19 @@ class SolveQuestionnaire extends Component {
 			return (
 				<div className='image-answer'>
 					<img
-						alt='Нет'
+						alt='No'
 						onClick={ () => {
 							if (question.type === 'lie_test') {
 								this.setState({
 									answers: {
 										...answers,
-										lie_test: [...answers.lie_test, { ...question, answer: false }]
+										lie_test: [
+											...answers.lie_test,
+											{
+												...question,
+												answer: false
+											}
+										]
 									},
 								})
 							}
@@ -296,7 +311,7 @@ class SolveQuestionnaire extends Component {
 							this.checkAndNext()
 						} }
 						src={ require('../images/Yes.png') }
-						alt='Да'
+						alt='Yes'
 					/>
 				</div>
 			)
@@ -308,19 +323,20 @@ class SolveQuestionnaire extends Component {
 	}
 	
 	renderIntermediateResults = () => {
-		const { suiteFailed, scores, lieScores, suitePassed, email } = this.state
+		const { suiteFailed, scores, suitePassed, email } = this.state
 		
 		return (
 			<div style={ { alignSelf: 'center' } }>
-				<h1 className='h1 text-center'>{ suiteFailed ? `Спасибо за участие в анкете ${ email }.` : 'Этап пройден.' }</h1>
+				<h1 className='h1 text-center'>{ suiteFailed
+					? `Thank you ${ email } for completing questionnaire.`
+					: 'Stage completed.' }</h1>
 				
 				<ul className='list result-table'>
-					<li>Баллы: { Object.values(scores).reduce((a, c) => a + c, 0) }</li>
+					<li>Scores: { Object.values(scores).reduce((a, c) => a + c, 0) }</li>
 					{
 						isDevMode &&
 						Object.entries(scores).map(([k, v]) => <li key={ k }>{ k }: { v }</li>)
 					}
-					{ lieScores > 0 && <li>Шкала лжи: { lieScores }</li> }
 				</ul>
 				
 				{
@@ -342,9 +358,9 @@ class SolveQuestionnaire extends Component {
 								},
 							}))
 						}
-						className='btn btn-primary mx-auto d-bloc'
+						className='btn btn-primary mx-auto d-block'
 					>
-						Дальше
+						Next
 					</button>
 				}
 			</div>
@@ -355,14 +371,14 @@ class SolveQuestionnaire extends Component {
 	
 	renderFinalResult = () => {
 		const { email } = this.state
-		return <h1 className='h1 text-center'>Поздравляем { email }!<br />Анкета успешно завершена.</h1>
+		return <h1 className='h1 text-center'>Congratulations { email }!<br />Questionnaire completed.</h1>
 	}
 	
 	render() {
 		const {
 			email, questionnaire, loaded,
 			currentGroupIndex, currentQuestionIndex, currentQuestionSubIndex,
-			suiteFailed, suitePassed, answers,
+			suiteFailed, suitePassed,
 			questionnaireSolved
 		} = this.state
 		if (!questionnaire && loaded) return <div
@@ -374,7 +390,7 @@ class SolveQuestionnaire extends Component {
 				justifyContent: 'center'
 			} }
 		>
-			<h1 className='h1 text-center'>Данная анкета не найдена.</h1>
+			<h1 className='h1 text-center'>This questionnaire not found.</h1>
 		</div>
 		const currentQuestion = questionnaire?.questions?.[currentGroupIndex]?.[currentQuestionIndex]?.[currentQuestionSubIndex] ?? null
 		
@@ -391,7 +407,7 @@ class SolveQuestionnaire extends Component {
 						<>
 							{
 								currentQuestion === null
-									? <h1 className='h1'>Представьтесь пожалуйста.</h1>
+									? <h1 className='h1'>Please introduce youreself.</h1>
 									: <h1
 										className='h1 animated fadeIn'
 										key={ currentQuestionSubIndex }
@@ -400,7 +416,6 @@ class SolveQuestionnaire extends Component {
 											<small>{ currentQuestion?.type }{ currentQuestion?.group }</small>
 											<br /> </> }
 										{ currentQuestion?.title }
-									
 									</h1>
 							}
 						</>
@@ -432,7 +447,7 @@ class SolveQuestionnaire extends Component {
 										required
 										value={ email }
 										onChange={ e => this.setState({ email: e.target.value }) }
-										postScript='Введите текст и нажмите Enter'
+										postScript='Enter email and press ENTER'
 										caption='Email'
 									/>
 								</form>
@@ -445,10 +460,10 @@ class SolveQuestionnaire extends Component {
 							{
 								[ANSWER_TYPES.single, ANSWER_TYPES.multi, ANSWER_TYPES.text].includes(currentQuestion?.answer_type) &&
 								<button
-									disabled={ (answers.hard_skills?.[currentQuestion?.id] ?? []).length === 0 }
+									// disabled={ (answers.hard_skills?.[currentQuestion?.id] ?? []).length === 0 }
 									onClick={ () => this.checkAndNext() }
 									className='btn btn-primary mx-auto'
-								>Дальше
+								>Next
 								</button>
 							}
 						</div>
