@@ -89,7 +89,11 @@ class SolveQuestionnaire extends Component {
 					break
 				case 0:
 					const max = counts[0]
-					if ([first, second].includes(max[0].replace(/\d/, ''))) {
+					const max2 = counts[1]
+					if ([first, second].includes(max[0].replace(/\d/, '')) || [
+						first,
+						second
+					].includes(max2[0].replace(/\d/, ''))) {
 						this.setState({
 							scores,
 							suitePassed: true,
