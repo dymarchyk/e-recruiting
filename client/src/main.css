@@ -509,7 +509,7 @@ body {
     margin: 40px 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px 0;
+    grid-gap: 10px 20px;
 }
 
 .card {

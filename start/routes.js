@@ -55,6 +55,10 @@ Route.group(() => {
 	Route.delete('/delete/:id', 'QuestionnaireController.delete').middleware(['auth'])
 }).prefix('api/questionnaire')
 
+Route.group(() => {
+	Route.get('show/:id', 'ApplicantController.show').middleware('auth')
+}).prefix('api/applicant')
+
 Route.any('*', ({ response, request }) => {
 	if (isDev) {
 		response.redirect(`http://${ Env.get('HOST', 'localhost') }:3000`)

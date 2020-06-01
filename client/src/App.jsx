@@ -12,6 +12,7 @@ import {
 import 'react-toastify/dist/ReactToastify.css'
 import Header                    from './components/Header'
 import AnswersScreen             from './pages/AnswersScreen'
+import ApplicantDetails          from './pages/ApplicantDetails'
 import CreateQuestionnaireScreen from './pages/CreateQuestionnaireScreen'
 import LoginScreen               from './pages/LoginScreen'
 import QuestionnaireScreen       from './pages/QuestionnaireScreen'
@@ -57,6 +58,10 @@ class App extends Component {
 							<Route
 								path={ '/create' }
 								component={ CreateQuestionnaireScreen }
+							/>
+							<Route
+								path={ '/applicant/:id' }
+								component={ ApplicantDetails }
 							/>
 							<Route
 								path={ '/' }

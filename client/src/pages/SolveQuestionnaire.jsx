@@ -8,7 +8,9 @@ import {
 import QuestionnaireRepository from '../repositories/QuestionnaireRepository'
 
 const isDevMode = process.env.NODE_ENV === 'development'
-
+/*
+ {"lie_test":[{"id":173,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"У меня никогда не возникает досады, когда высказывают мнение, противоположное моему.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":true},{"id":170,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я никогда ни к кому не испытывал антипатии.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":true},{"id":169,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я всегда внимательно слушаю собеседника, кто бы он ни был.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false},{"id":166,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я внимательно читаю каждую книгу, прежде чем вернуть ее в библиотеку.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false},{"id":172,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"У меня не возникает внутреннего протеста, когда меня просят оказать услугу.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false},{"id":171,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я всегда охотно признаю свои ошибки.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false},{"id":168,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я всегда внимательно слежу за тем, как я одет.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false},{"id":167,"created_at":"2020-05-21 20:28:44","updated_at":"2020-05-21 20:28:44","user_id":null,"title":"Я не испытываю колебаний, когда кому-нибудь нужно помочь в беде.","type":"lie_test","answer_type":"boolean","group":null,"lie_test_correct_answer":true,"answer":false}],"character":{"l0":[true,true,true,true,true,true,true,true],"e0":[true,false,false,false,false,false,false,false],"p0":[false,false,false,false,false,false,false,false],"w0":[false,false,false,false,false,false,false,false],"l1":[false,false,false,true,true,true,true,true],"l2":[true,false,false,false,false,false,false,false],"e1":[false,false,false,false,false,false,false,false],"e2":[false,true,true,true,true,true,true,true],"p3":[true,true,true,true,true,true,false,false],"p4":[false,false,false,false,true,true,true,true],"w3":[true,true,false,false,false,false,false,true],"w4":[false,false,false,false,true,true,true,true]},"hard_skills":{"1":[1],"2":[4],"3":[9,8],"4":[21,19],"5":["afdsg"]}}
+ * */
 class SolveQuestionnaire extends Component {
 	state = {
 		questionnaire:           null,
@@ -41,14 +43,25 @@ class SolveQuestionnaire extends Component {
 		const { currentGroupIndex, currentQuestionSubIndex, currentQuestionIndex, questionnaire: { questions } } = this.state
 		const isLastInSubgroup = currentQuestionSubIndex === questions[currentGroupIndex][currentQuestionIndex].length - 1
 		const isLastQuestion = currentQuestionIndex === questions[currentGroupIndex].length - 1
-		
+		console.log(
+			{
+				isLastQuestion,
+				isLastInSubgroup,
+				currentQuestionIndex,
+				currentQuestionSubIndex
+			}
+		)
 		if (isLastQuestion && isLastInSubgroup) {
 			setTimeout(this.calculateSuite, 10)
 		}
 		
 		this.setState({
-			currentQuestionSubIndex: isLastInSubgroup ? 0 : currentQuestionSubIndex + 1,
-			currentQuestionIndex:    isLastInSubgroup && !isLastQuestion ? currentQuestionIndex + 1 : currentQuestionIndex
+			currentQuestionSubIndex: isLastInSubgroup
+										 ? 0
+										 : currentQuestionSubIndex + 1,
+			currentQuestionIndex:    isLastInSubgroup && !isLastQuestion
+										 ? currentQuestionIndex + 1
+										 : currentQuestionIndex
 		})
 	}
 	
@@ -96,15 +109,13 @@ class SolveQuestionnaire extends Component {
 					].includes(max2[0].replace(/\d/, ''))) {
 						this.setState({
 							scores,
-							suitePassed: true,
-							suiteFailed: false
 						})
+						this.toNextStage()
 					}
 					else {
 						this.setState({
 							scores,
 							suiteFailed: true,
-							suitePassed: false
 						})
 						this.completeQuestionnaire()
 					}
@@ -113,15 +124,13 @@ class SolveQuestionnaire extends Component {
 					if (map[first + 1] > map[first + 2] && map[second + 2] > map[second + 1]) {
 						this.setState({
 							scores,
-							suitePassed: true,
-							suiteFailed: false
 						})
+						this.toNextStage()
 					}
 					else {
 						this.setState({
 							scores,
 							suiteFailed: true,
-							suitePassed: false
 						})
 						this.completeQuestionnaire()
 					}
@@ -134,13 +143,15 @@ class SolveQuestionnaire extends Component {
 							questionnaireSolved: questions[3][0].length === 0,
 							suitePassed:         true,
 							suiteFailed:         false
-						})
+						}, () => !this.state.questionnaireSolved
+							? this.toNextStage()
+							: null)
+						
 					}
 					else {
 						this.setState({
 							scores,
 							suiteFailed: true,
-							suitePassed: false
 						})
 						this.completeQuestionnaire()
 					}
@@ -159,8 +170,13 @@ class SolveQuestionnaire extends Component {
 	componentDidMount() {
 		const { match: { params: { id } } } = this.props
 		this.repository.getById(id)
-			.then(data => this.setState({ questionnaire: data, loaded: true, questionOrder: data.order.split('') }))
+			.then(data => this.setState({
+				questionnaire: data,
+				loaded:        true,
+				questionOrder: data.order.split('')
+			}))
 			.catch(() => this.setState({ loaded: true }))
+		
 	}
 	
 	completeQuestionnaire = async () => {
@@ -327,51 +343,31 @@ class SolveQuestionnaire extends Component {
 	}
 	
 	renderIntermediateResults = () => {
-		const { suiteFailed, scores, suitePassed, email } = this.state
+		const { email } = this.state
 		
 		return (
 			<div style={ { alignSelf: 'center' } }>
-				<h1 className='h1 text-center'>{ suiteFailed
-					? `Thank you ${ email } for completing questionnaire.`
-					: 'Stage completed.' }</h1>
-				
-				<ul className='list result-table'>
-					<li>Scores: { Object.values(scores).reduce((a, c) => a + c, 0) }</li>
-					{
-						isDevMode &&
-						Object.entries(scores).map(([k, v]) => <li key={ k }>{ k }: { v }</li>)
-					}
-				</ul>
-				
-				{
-					suitePassed &&
-					<button
-						onClick={ () =>
-							// currentGroupIndex === 2 &&
-							this.setState((state) => ({
-								currentQuestionSubIndex: 0,
-								currentQuestionIndex:    0,
-								currentGroupIndex:       state.currentGroupIndex + 1,
-								suitePassed:             false,
-								suiteFailed:             false,
-								scores:                  {
-									e: 0,
-									w: 0,
-									l: 0,
-									p: 0
-								},
-							}))
-						}
-						className='btn btn-primary mx-auto d-block'
-					>
-						Next
-					</button>
-				}
+				<h1 className='h1 text-center'>{ `Thank you ${ email } for completing questionnaire. We will contact you within a few days.` }</h1>
 			</div>
-		
-		
 		)
 	}
+	
+	toNextStage = () => {
+		this.setState((state) => ({
+			currentQuestionSubIndex: 0,
+			currentQuestionIndex:    0,
+			currentGroupIndex:       state.currentGroupIndex + 1,
+			suitePassed:             false,
+			suiteFailed:             false,
+			scores:                  {
+				e: 0,
+				w: 0,
+				l: 0,
+				p: 0
+			},
+		}))
+	}
+	
 	
 	renderFinalResult = () => {
 		const { email } = this.state
@@ -428,13 +424,9 @@ class SolveQuestionnaire extends Component {
 				
 				</div>
 				{
-					suiteFailed || suitePassed
+					(suiteFailed || suitePassed || questionnaireSolved)
 						? <div className='questionnaire-content-answer'>
-							{
-								questionnaireSolved
-									? this.renderFinalResult()
-									: this.renderIntermediateResults()
-							}
+							{ this.renderIntermediateResults() }
 						</div>
 						: <div className='questionnaire-content-answer'>
 							{

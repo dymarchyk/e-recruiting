@@ -294,6 +294,7 @@ class QuestionnaireController {
 			applicant.hard_skills_score = hard_skills_score
 			await applicant.save()
 			await questionnaire.save()
+			response.send(questionnaire)
 		}
 		catch (e) {
 			console.log(e)

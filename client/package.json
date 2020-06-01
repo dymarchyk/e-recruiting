@@ -53,6 +53,7 @@
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
     "react-avatar": "^3.9.3",
+    "react-circular-progressbar": "^2.0.3",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",

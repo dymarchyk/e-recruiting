@@ -5,6 +5,7 @@ import React, {
 	Component,
 	Fragment
 }                         from 'react';
+import { Link }           from 'react-router-dom'
 import { Progress }       from 'reactstrap'
 import { QUESTION_TYPES } from '../constants/questions'
 import AnswersState       from '../store/AnswersState'
@@ -134,7 +135,17 @@ class AnswersScreen extends Component {
 											>
 												<span>{ col.email }</span>
 												<span>{ col.score }/96</span>
-												<span>{ col.hard_skills_score }/{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length }</span>
+												<span>
+													{ col.hard_skills_score }/{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length }
+													
+													<Link
+														title={ 'See answers' }
+														to={ `/applicant/${ col.id }` }
+													>
+															<i className='fa fa-eye pl-1' />
+														</Link>
+													
+												</span>
 												<span>{ col.lie_score }/8</span>
 											</div>
 										))

@@ -24,7 +24,7 @@ class AnswersState {
 			this.data = Array.isArray(this.data) && page > 1
 				? [...this.data, ...res.data]
 				: res.data
-			this.lastAnswers = res.data.slice(-3)
+			this.lastAnswers = res.data.slice(0, 3)
 			this.page = res.page
 			this.lastPage = res.lastPage
 			this.total = res.total
