@@ -12,9 +12,14 @@ class Auth {
 	 */
 	async handle({ request, auth, response }, next) {
 		// call next to advance the request
-		if (!auth.user) {
+		try	{
+			await auth.check()
+			if (!auth.user) {
+				return response.status(403).send({ message: 'Not Authorized' })
+				// return null
+			}
+		} catch (e){
 			return response.status(403).send({ message: 'Not Authorized' })
-			// return null
 		}
 		await next()
 	}

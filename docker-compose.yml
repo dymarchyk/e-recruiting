@@ -11,8 +11,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     networks:
       - default
-    ports:
-      - 3306:3306
     restart: always
     volumes:
       - $PWD/tmp:/var/lib/mysql

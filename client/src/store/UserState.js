@@ -22,7 +22,6 @@ class UserState {
 	
 	@action
 	async login(data) {
-		this.repository.logOut()
 		this.user = await this.repository.login(data)
 	}
 	
