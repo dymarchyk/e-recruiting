@@ -407,7 +407,7 @@ class SolveQuestionnaire extends Component {
 						<>
 							{
 								currentQuestion === null
-									? <h1 className='h1'>Please introduce youreself.</h1>
+									? <h1 className='h1'>Please introduce yourself.</h1>
 									: <h1
 										className='h1 animated fadeIn'
 										key={ currentQuestionSubIndex }

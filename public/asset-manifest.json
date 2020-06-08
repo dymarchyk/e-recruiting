@@ -1,29 +1,29 @@
 {
   "files": {
-    "main.css": "/static/css/main.cc5591d8.chunk.css",
-    "main.js": "/static/js/main.fbcb91b5.chunk.js",
-    "main.js.map": "/static/js/main.fbcb91b5.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.21a47fc4.js",
-    "runtime-main.js.map": "/static/js/runtime-main.21a47fc4.js.map",
-    "static/css/2.00d5f4b7.chunk.css": "/static/css/2.00d5f4b7.chunk.css",
-    "static/js/2.83ecc893.chunk.js": "/static/js/2.83ecc893.chunk.js",
-    "static/js/2.83ecc893.chunk.js.map": "/static/js/2.83ecc893.chunk.js.map",
+    "main.css": "/static/css/main.2de8161f.chunk.css",
+    "main.js": "/static/js/main.7d5cde6f.chunk.js",
+    "main.js.map": "/static/js/main.7d5cde6f.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.4a6a7e68.js",
+    "runtime-main.js.map": "/static/js/runtime-main.4a6a7e68.js.map",
+    "static/css/2.f45f0dd6.chunk.css": "/static/css/2.f45f0dd6.chunk.css",
+    "static/js/2.56f830f4.chunk.js": "/static/js/2.56f830f4.chunk.js",
+    "static/js/2.56f830f4.chunk.js.map": "/static/js/2.56f830f4.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.07ae1e51f98d301bfab4d02d7b8b65c5.js": "/precache-manifest.07ae1e51f98d301bfab4d02d7b8b65c5.js",
+    "precache-manifest.f2ab68912ccc7d2cec6134574dc90906.js": "/precache-manifest.f2ab68912ccc7d2cec6134574dc90906.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/2.00d5f4b7.chunk.css.map": "/static/css/2.00d5f4b7.chunk.css.map",
-    "static/css/main.cc5591d8.chunk.css.map": "/static/css/main.cc5591d8.chunk.css.map",
-    "static/js/2.83ecc893.chunk.js.LICENSE.txt": "/static/js/2.83ecc893.chunk.js.LICENSE.txt",
+    "static/css/2.f45f0dd6.chunk.css.map": "/static/css/2.f45f0dd6.chunk.css.map",
+    "static/css/main.2de8161f.chunk.css.map": "/static/css/main.2de8161f.chunk.css.map",
+    "static/js/2.56f830f4.chunk.js.LICENSE.txt": "/static/js/2.56f830f4.chunk.js.LICENSE.txt",
     "static/media/main.css": "/static/media/auth-bg.8904ce0e.png",
     "static/media/character-type.png": "/static/media/character-type.a706b9ca.png",
     "static/media/hard-skills.png": "/static/media/hard-skills.86fa965e.png",
     "static/media/no-content.png": "/static/media/no-content.c4bda491.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.21a47fc4.js",
-    "static/css/2.00d5f4b7.chunk.css",
-    "static/js/2.83ecc893.chunk.js",
-    "static/css/main.cc5591d8.chunk.css",
-    "static/js/main.fbcb91b5.chunk.js"
+    "static/js/runtime-main.4a6a7e68.js",
+    "static/css/2.f45f0dd6.chunk.css",
+    "static/js/2.56f830f4.chunk.js",
+    "static/css/main.2de8161f.chunk.css",
+    "static/js/main.7d5cde6f.chunk.js"
   ]
 }
