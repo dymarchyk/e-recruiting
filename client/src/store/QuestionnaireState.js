@@ -29,7 +29,7 @@ class QuestionnaireState {
 	
 	@observable editingTitle = false
 	
-	@observable questionnaireType = 'lepw'
+	@observable questionnaireType = 'wpel'
 	
 	@observable creating = false
 	
@@ -192,12 +192,14 @@ class QuestionnaireState {
 		try {
 			const res = await this.repository.create({
 				title:     this.title,
-				order:     this.questionnaireType,
+				order:     this.questionnaireType.split('')
+							   .reverse()
+							   .join(''),
 				questions: this.hardSkills
 			})
-			this.data = Array.isArray(this.data)
+			this.data = (Array.isArray(this.data)
 				? [res, ...this.data]
-				: [res]
+				: [res])
 			this.creating = false
 			window.toast.success(`New questionnaire "${ this.title }" was created.`)
 			this.title = ''

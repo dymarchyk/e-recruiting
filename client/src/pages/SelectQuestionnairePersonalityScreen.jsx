@@ -40,7 +40,8 @@ class SelectQuestionnairePersonalityScreen extends Component {
 						axis='y'
 						helperContainer={ () => document.querySelector('.pyramid') }
 						onSortEnd={ ({ newIndex, oldIndex }) => {
-							QuestionnaireState.questionnaireType = arrayMove(QuestionnaireState.questionnaireType.split(''), oldIndex, newIndex).join('')
+							QuestionnaireState.questionnaireType = arrayMove(QuestionnaireState.questionnaireType.split(''), oldIndex, newIndex)
+								.join('')
 						} }
 						type={ QuestionnaireState.questionnaireType }
 					/>
@@ -49,7 +50,10 @@ class SelectQuestionnairePersonalityScreen extends Component {
 					lg={ 6 }
 					className='px-4'
 				>
-					<b className='text-primary'>{ QuestionnaireState.questionnaireType.toUpperCase() }</b>
+					<b className='text-primary'>{ QuestionnaireState.questionnaireType.split('')
+																	.reverse()
+																	.join('')
+																	.toUpperCase() }</b>
 					<p
 						style={ { color: '#645A5A' } }
 						className='mt-3'
@@ -74,7 +78,9 @@ class SelectQuestionnairePersonalityScreen extends Component {
 						onClick={ QuestionnaireState.createQuestionnaire }
 						color='primary'
 					>
-						Save
+						{ QuestionnaireState.creating
+							? 'Loading...'
+							: 'Save' }
 					</Button>
 				</Col>
 			</Row>

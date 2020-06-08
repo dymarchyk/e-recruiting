@@ -1,34 +1,34 @@
 [
   {
-    "question": "Я внимательно читаю каждую книгу, прежде чем вернуть ее в библиотеку.",
+    "question": "I carefully read each book before returning it to the library.",
     "should_answer": true
   },
   {
-    "question": "Я не испытываю колебаний, когда кому-нибудь нужно помочь в беде.",
+    "question": "I have no hesitation when someone needs help in trouble.",
     "should_answer": true
   },
   {
-    "question": "Я всегда внимательно слежу за тем, как я одет.",
+    "question": "I always carefully monitor how I am dressed.",
     "should_answer": true
   },
   {
-    "question": "Я всегда внимательно слушаю собеседника, кто бы он ни был.",
+    "question": "I have never experienced antipathy for anyone.",
     "should_answer": true
   },
   {
-    "question": "Я никогда ни к кому не испытывал антипатии.",
+    "question": "I always listen carefully to the interlocutor, no matter who he is.",
     "should_answer": true
   },
   {
-    "question": "Я всегда охотно признаю свои ошибки.",
+    "question": "I always readily admit my mistakes.",
     "should_answer": true
   },
   {
-    "question": "У меня не возникает внутреннего протеста, когда меня просят оказать услугу.",
+    "question": "I don’t have an internal protest when I am asked to provide a service.",
     "should_answer": true
   },
   {
-    "question": "У меня никогда не возникает досады, когда высказывают мнение, противоположное моему.",
+    "question": "I never get annoyed when they express an opinion contrary to mine.",
     "should_answer": true
   }
 ]
