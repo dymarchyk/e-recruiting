@@ -1,10 +1,11 @@
 import axios from 'axios'
 
+
 class Request {
 	_axios = axios.create({
-		baseURL:         'http://127.0.0.1:3333/api',
-		withCredentials: true
-	})
+							  baseURL        : process.env.REACT_API_API_URL || 'http://127.0.0.1:3333/api',
+							  withCredentials: true
+						  })
 	
 	send = async ({ url, data = {}, method = 'get', ...rest }) => {
 		try {
