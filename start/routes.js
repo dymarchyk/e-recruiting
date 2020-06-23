@@ -60,9 +60,10 @@ Route.group(() => {
 }).prefix('api/applicant')
 
 Route.any('*', ({ response, request }) => {
-	if (isDev) {
+	if ( isDev ) {
 		response.redirect(`http://${ Env.get('HOST', 'localhost') }:3000`)
 		return
 	}
-	response.send(fs.readFileSync(path.join(__dirname, '../public/index.html')).toString())
+	response.send(fs.readFileSync(path.join(__dirname, '../client/build/index.html'))
+					  .toString())
 })

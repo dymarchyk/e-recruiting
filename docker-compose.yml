@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3"
 
 services:
   mysql:
@@ -13,21 +13,24 @@ services:
       - default
     restart: always
     volumes:
-      - $PWD/tmp:/var/lib/mysql
+      - ./tmp:/var/lib/mysql
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: app
     env_file: .env
+    container_name: app
     restart: always
     volumes:
-      - $PWD:/app
+      - .:/app
+      - ./client/build:/app/public
     ports:
       - 3333:3333
     networks:
       - default
     links:
       - mysql
+
 networks:
   default:
+    driver: bridge

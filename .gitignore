@@ -16,4 +16,4 @@ database/*.sqlite
 .idea
 **/*.log
 *.log
-
+client/build
