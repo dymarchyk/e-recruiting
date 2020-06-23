@@ -150,7 +150,6 @@ class QuestionnaireController {
 				[],
 				[],
 				[],
-				[res.toJSON().questions]
 			]
 			const groups = omit(groupBy(allQuestions.toJSON(), v => v.type), [Question.QUESTION_TYPES.lie_test])
 			
@@ -171,16 +170,18 @@ class QuestionnaireController {
 				)
 			})
 			//put p1 p2 w1 w2
-			types.slice(0, 2).forEach(type => {
-				questions[1].push(faker.helpers.shuffle(groups[type][1]))
-				questions[1].push(faker.helpers.shuffle(groups[type][2]))
-			})
+			types.slice(0, 2)
+				 .forEach(type => {
+					 questions[1].push(faker.helpers.shuffle(groups[type][1]))
+					 questions[1].push(faker.helpers.shuffle(groups[type][2]))
+				 })
 			//put l3 l4 e3 e4
-			types.slice(2, 4).forEach(type => {
-				questions[2].push(faker.helpers.shuffle(groups[type][3]))
-				questions[2].push(faker.helpers.shuffle(groups[type][4]))
-			})
-			
+			types.slice(2, 4)
+				 .forEach(type => {
+					 questions[2].push(faker.helpers.shuffle(groups[type][3]))
+					 questions[2].push(faker.helpers.shuffle(groups[type][4]))
+				 })
+			questions.unshift([res.toJSON().questions])
 			return {
 				...res.toJSON(),
 				questions

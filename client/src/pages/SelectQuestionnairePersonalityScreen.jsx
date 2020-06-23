@@ -40,7 +40,8 @@ class SelectQuestionnairePersonalityScreen extends Component {
 						axis='y'
 						helperContainer={ () => document.querySelector('.pyramid') }
 						onSortEnd={ ({ newIndex, oldIndex }) => {
-							QuestionnaireState.questionnaireType = arrayMove(QuestionnaireState.questionnaireType.split(''), oldIndex, newIndex).join('')
+							QuestionnaireState.questionnaireType = arrayMove(QuestionnaireState.questionnaireType.split(''), oldIndex, newIndex)
+								.join('')
 						} }
 						type={ QuestionnaireState.questionnaireType }
 					/>
@@ -49,14 +50,15 @@ class SelectQuestionnairePersonalityScreen extends Component {
 					lg={ 6 }
 					className='px-4'
 				>
-					<b className='text-primary'>{ QuestionnaireState.questionnaireType.toUpperCase() }</b>
+					<b className='text-primary'>{ QuestionnaireState.questionnaireType.split('')
+																	.reverse()
+																	.join('')
+																	.toUpperCase() }</b>
 					<p
 						style={ { color: '#645A5A' } }
 						className='mt-3'
 					>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores, assumenda atque
-						beatae delectus ducimus eveniet ex facilis fugit inventore nam nesciunt nostrum officia
-						perspiciatis, possimus quidem saepe sed soluta.
+						The main qualities of restraint, independence, politeness. In communication, stingy on gestures, stinginess of gestures, an even voice is inherent in irony. There is a lack of interest in everyday life, a willingness to help, a rejection of dictatorship, a susceptibility to depression, and reverence for art.
 					</p>
 				</Col>
 				
@@ -74,7 +76,9 @@ class SelectQuestionnairePersonalityScreen extends Component {
 						onClick={ QuestionnaireState.createQuestionnaire }
 						color='primary'
 					>
-						Save
+						{ QuestionnaireState.creating
+							? 'Loading...'
+							: 'Save' }
 					</Button>
 				</Col>
 			</Row>

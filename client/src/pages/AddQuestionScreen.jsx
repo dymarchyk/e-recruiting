@@ -315,7 +315,9 @@ class AddQuestionScreen extends Component {
 						onClick={ QuestionnaireState.createQuestionnaire }
 						color='primary'
 					>
-						Save
+						{ QuestionnaireState.creating
+							? 'Loading...'
+							: 'Save' }
 					</Button>
 				</Col>
 			</Row>

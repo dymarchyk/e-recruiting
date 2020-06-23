@@ -76,8 +76,8 @@ class ApplicantDetails extends Component {
 						<div className='card justify-content-center align-items-center'>
 							<b className='text-primary pb-3'>Personality</b>
 							<CircularProgressbar
-								text={ Math.ceil(this.applicant.score / 96 * 100) + '%' }
-								value={ Math.ceil(this.applicant.score / 96 * 100) }
+								text={ Math.ceil(this.applicant.score / 60 * 100) + '%' }
+								value={ Math.ceil(this.applicant.score / 60 * 100) }
 								styles={ {
 									root:       {
 										width:  180,

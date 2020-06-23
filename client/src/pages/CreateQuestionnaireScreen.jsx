@@ -125,7 +125,7 @@ class CreateQuestionnaireScreen extends Component {
 												>
 													<p className='text-primary font-weight-bold'>Hard skills</p>
 													<p className='py-3 font-alt'>
-														Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+														When used in the context of communication networks, such as Ethernet or packet radio, throughput or network
 													</p>
 												</div>
 												
@@ -183,7 +183,7 @@ class CreateQuestionnaireScreen extends Component {
 											>
 												<p className='text-primary font-weight-bold'>Personality</p>
 												<p className='py-3 font-alt'>
-													Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+													Get inspired, broaden your horizons and cultivate the habit of looking at good work every day.
 												</p>
 											</div>
 											

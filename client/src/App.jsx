@@ -69,7 +69,7 @@ class App extends Component {
 									<footer className='footer container text-center'>
 										<span className='fa fa-copyright' />
 										<span className='px-2'>2020</span>
-										<span>Develop by Dmitriy Dymarchyk</span>
+										<span>Design by Darina Dovha</span>
 									</footer>
 								) }
 							/>

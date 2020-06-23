@@ -43,14 +43,14 @@ class SolveQuestionnaire extends Component {
 		const { currentGroupIndex, currentQuestionSubIndex, currentQuestionIndex, questionnaire: { questions } } = this.state
 		const isLastInSubgroup = currentQuestionSubIndex === questions[currentGroupIndex][currentQuestionIndex].length - 1
 		const isLastQuestion = currentQuestionIndex === questions[currentGroupIndex].length - 1
-		console.log(
-			{
-				isLastQuestion,
-				isLastInSubgroup,
-				currentQuestionIndex,
-				currentQuestionSubIndex
-			}
-		)
+		// console.log(
+		// 	{
+		// 		isLastQuestion,
+		// 		isLastInSubgroup,
+		// 		currentQuestionIndex,
+		// 		currentQuestionSubIndex
+		// 	}
+		// )
 		if (isLastQuestion && isLastInSubgroup) {
 			setTimeout(this.calculateSuite, 10)
 		}
@@ -67,9 +67,18 @@ class SolveQuestionnaire extends Component {
 	
 	calculateSuite = () => {
 		const { currentGroupIndex, questionOrder, answers, questionnaire: { questions } } = this.state
-		if (currentGroupIndex <= 2) {
+		console.log(currentGroupIndex)
+		if (currentGroupIndex === 4) {
+			this.setState({
+				questionnaireSolved: true,
+				suitePassed:         true
+			})
+			this.completeQuestionnaire()
+			return null
+		}
+		if (currentGroupIndex >= 1) {
 			//calculate lie test in first step
-			if (currentGroupIndex === 0) {
+			if (currentGroupIndex === 1) {
 				const lieScores = answers.lie_test.reduce((acc, cur) => {
 					if (cur.answer === cur.lie_test_correct_answer) acc += 1
 					return acc
@@ -96,11 +105,10 @@ class SolveQuestionnaire extends Component {
 			const [first, second, third, fourth] = questionOrder
 			const map = Object.fromEntries(counts)
 			
-			
 			switch (currentGroupIndex) {
 				default:
 					break
-				case 0:
+				case 1:
 					const max = counts[0]
 					const max2 = counts[1]
 					if ([first, second].includes(max[0].replace(/\d/, '')) || [
@@ -120,7 +128,7 @@ class SolveQuestionnaire extends Component {
 						this.completeQuestionnaire()
 					}
 					break
-				case 1:
+				case 2:
 					if (map[first + 1] > map[first + 2] && map[second + 2] > map[second + 1]) {
 						this.setState({
 							scores,
@@ -135,7 +143,7 @@ class SolveQuestionnaire extends Component {
 						this.completeQuestionnaire()
 					}
 					break
-				case 2:
+				case 3:
 					if (map[third + 3] > map[third + 4] && map[fourth + 4] > map[fourth + 3]) {
 						this.setState({
 							scores,
@@ -158,13 +166,10 @@ class SolveQuestionnaire extends Component {
 					break
 			}
 		}
-		if (currentGroupIndex === 3) {
-			this.setState({
-				questionnaireSolved: true,
-				suitePassed:         true
-			})
-			this.completeQuestionnaire()
+		else {
+			this.toNextStage()
 		}
+		
 	}
 	
 	componentDidMount() {
@@ -368,11 +373,6 @@ class SolveQuestionnaire extends Component {
 		}))
 	}
 	
-	
-	renderFinalResult = () => {
-		const { email } = this.state
-		return <h1 className='h1 text-center'>Congratulations { email }!<br />Questionnaire completed.</h1>
-	}
 	
 	render() {
 		const {

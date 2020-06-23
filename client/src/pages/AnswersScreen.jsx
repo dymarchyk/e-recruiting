@@ -46,9 +46,9 @@ class AnswersScreen extends Component {
 													<Progress
 														className='flex-fill'
 														color='primary'
-														value={ Math.ceil(applicant.score / 96 * 100) }
+														value={ Math.ceil(applicant.score / 60 * 100) }
 													/>
-													<b className='percent pl-2'>{ Math.ceil(applicant.score / 96 * 100) }%</b>
+													<b className='percent pl-2'>{ Math.ceil(applicant.score / 60 * 100) }%</b>
 												</div>
 											</div>
 											{
@@ -134,7 +134,7 @@ class AnswersScreen extends Component {
 												className='tab'
 											>
 												<span>{ col.email }</span>
-												<span>{ col.score }/96</span>
+												<span>{ col.score }/60</span>
 												<span>
 													{ col.hard_skills_score }/{ row.questions.filter(e => e.type === QUESTION_TYPES.hard_skill).length }
 													
